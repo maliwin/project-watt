@@ -1,5 +1,7 @@
 extends VBoxContainer
 
+@onready var GM = get_node("/root/GM") # <-- Add this line
+
 func _ready() -> void:
     # This panel builds its OWN buttons
     _build_buttons()

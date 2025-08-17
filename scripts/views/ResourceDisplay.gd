@@ -1,5 +1,7 @@
 extends RichTextLabel
 
+@onready var GM = get_node("/root/GM") # <-- Add this line
+
 var _cached_inventory: Dictionary = {}
 var _cached_currency: int = 0
 var _cached_tool_level: int = 0
@@ -28,7 +30,7 @@ func _refresh_display() -> void:
         for resource_name in sorted_keys:
             var amount: int = _cached_inventory[resource_name]
             if amount > 0:
-                var sell_price := GM.inventory_system.get_sell_price(resource_name)
+                var sell_price = GM.inventory_system.get_sell_price(resource_name)
                 if sell_price > 0:
                     lines.append("%s: %d ($%d each)" % [resource_name, amount, sell_price])
                 else:
@@ -49,7 +51,7 @@ func _refresh_display() -> void:
     lines.append("⚡ Mining Speed: %.1f tiles/sec" % GM.game_state.mining_speed)
     
     # Total inventory value
-    var total_value := GM.inventory_system.get_total_sell_value()
+    var total_value = GM.inventory_system.get_total_sell_value()
     if total_value > 0:
         lines.append("📦 Total inventory value: $%d" % total_value)
     
