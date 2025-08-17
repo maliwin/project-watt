@@ -122,7 +122,7 @@ func _on_game_state_changed(_value = null) -> void:
     var depth_label_node = find_child("Depth", true, false)
     if depth_label_node:
         var current_depth: float = GM.game_state.depth
-        var rock_name: String = WorldData.get_rock_name_for_depth(current_depth)
+        var rock_name: String = GM.world_data.get_rock_name_for_depth(current_depth)
         depth_label_node.text = "Depth: %.1f m (%s)" % [current_depth, rock_name]
 
 func _on_tool_upgraded(_tool: MiningTool) -> void:
@@ -130,7 +130,7 @@ func _on_tool_upgraded(_tool: MiningTool) -> void:
 
 func _update_single_tile(world_tile_pos: Vector2i) -> void:
     var current_depth: float = GM.game_state.depth
-    var base_world_row: int = int(floor(current_depth / WorldData.DEPTH_PER_TILE))
+    var base_world_row: int = int(floor(current_depth / GM.world_data.DEPTH_PER_TILE))
     var grid_y: int = world_tile_pos.y - base_world_row + character_grid_pos.y
     
     var base_world_col: int = GM.auto_mine_x - character_grid_pos.x
@@ -153,7 +153,7 @@ func render_mining_view() -> void:
     ore_layer.clear()
 
     var current_depth: float = GM.game_state.depth
-    var base_world_row: int = int(floor(current_depth / WorldData.DEPTH_PER_TILE))
+    var base_world_row: int = int(floor(current_depth / GM.world_data.DEPTH_PER_TILE))
     var base_world_col: int = GM.auto_mine_x - character_grid_pos.x
 
     for x in range(grid_width):
@@ -165,16 +165,16 @@ func render_mining_view() -> void:
                 continue
 
             var tile_depth: float = world_row * WorldData.DEPTH_PER_TILE
-            var rock_type: WorldData.RockType = WorldData.get_rock_type_for_depth(tile_depth)
+            var rock_type: WorldData.RockType = GM.world_data.get_rock_type_for_depth(tile_depth)
             var map_coords = Vector2i(x,y)
 
             if rock_type != WorldData.RockType.AIR:
-                var rock_atlas_coords = WorldData.get_atlas_coords_for_rock(rock_type)
+                var rock_atlas_coords = GM.world_data.get_atlas_coords_for_rock(rock_type)
                 rock_layer.set_cell(map_coords, 0, rock_atlas_coords)
                 
-                var ore_name: String = WorldData.get_ore_at_position(world_col, world_row)
-                if ore_name != "" and WorldData.has_ore_atlas(ore_name):
-                    var ore_atlas_coords = WorldData.get_atlas_coords_for_ore(ore_name)
+                var ore_name: String = GM.world_data.get_ore_at_position(world_col, world_row, GM.mining_system.auto_mine_column)
+                if ore_name != "" and GM.world_data.has_ore_atlas(ore_name):
+                    var ore_atlas_coords = GM.world_data.get_atlas_coords_for_ore(ore_name)
                     ore_layer.set_cell(map_coords, 0, ore_atlas_coords)
 
     create_tunnel_effect(current_depth)

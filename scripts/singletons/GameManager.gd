@@ -7,6 +7,7 @@ extends Node
 @onready var tile_tracker := TileTracker.new()
 @onready var mining_system := MiningSystem.new()
 @onready var upgrade_system := UpgradeSystem.new()
+@onready var world_data := WorldData.new()
 
 func _ready() -> void:
     add_child(inventory_system)
@@ -14,7 +15,7 @@ func _ready() -> void:
     add_child(mining_system)
     add_child(upgrade_system)
     
-    mining_system.initialize(game_state, inventory_system, mining_tool, tile_tracker)
+    mining_system.initialize(game_state, inventory_system, mining_tool, tile_tracker, world_data)
     upgrade_system.initialize(game_state, inventory_system, mining_tool)
     
     _setup_signal_connections()
@@ -41,7 +42,7 @@ func get_depth_per_tile() -> float:
     return WorldData.DEPTH_PER_TILE
 
 func query_ore_at(world_x: int, world_y: int) -> String:
-    return WorldData.get_ore_at_position(world_x, world_y)
+    return world_data.get_ore_at_position(world_x, world_y, auto_mine_x)
 
 func reset_game() -> void:
     game_state.reset()
