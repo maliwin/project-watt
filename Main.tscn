@@ -1,0 +1,79 @@
+[gd_scene load_steps=5 format=3 uid="uid://7fq0w3id0uk4"]
+
+[ext_resource type="Script" uid="uid://yfw24j847bah" path="res://views/MiningView.gd" id="1_glv2v"]
+[ext_resource type="Script" uid="uid://dvdkw5mpoc2es" path="res://views/UIPanel.gd" id="2_uu6xs"]
+
+[sub_resource type="FontFile" id="FontFile_uu6xs"]
+subpixel_positioning = 0
+msdf_pixel_range = 14
+msdf_size = 128
+cache/0/18/0/ascent = 0.0
+cache/0/18/0/descent = 0.0
+cache/0/18/0/underline_position = 0.0
+cache/0/18/0/underline_thickness = 0.0
+cache/0/18/0/scale = 1.0
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+
+[sub_resource type="Theme" id="Theme_uu6xs"]
+default_font = SubResource("FontFile_uu6xs")
+default_font_size = 18
+
+[node name="Main" type="Node"]
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 2
+
+[node name="MiningView" type="HBoxContainer" parent="HBoxContainer"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+script = ExtResource("1_glv2v")
+
+[node name="Depth" type="Label" parent="HBoxContainer/MiningView"]
+visible = false
+layout_mode = 2
+
+[node name="Character" type="Sprite2D" parent="HBoxContainer/MiningView"]
+
+[node name="RockSprite" type="Sprite2D" parent="HBoxContainer/MiningView"]
+
+[node name="UIPanel" type="HBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("2_uu6xs")
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/UIPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="MainContainer" type="VBoxContainer" parent="HBoxContainer/UIPanel/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ResourceDisplay" type="Label" parent="HBoxContainer/UIPanel/MarginContainer/MainContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Currency: $0"
+
+[node name="HSeparator" type="HSeparator" parent="HBoxContainer/UIPanel/MarginContainer/MainContainer"]
+layout_mode = 2
+
+[node name="UpgradeArea" type="ScrollContainer" parent="HBoxContainer/UIPanel/MarginContainer/MainContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="UpgradeList" type="VBoxContainer" parent="HBoxContainer/UIPanel/MarginContainer/MainContainer/UpgradeArea"]
+layout_mode = 2
+theme = SubResource("Theme_uu6xs")
