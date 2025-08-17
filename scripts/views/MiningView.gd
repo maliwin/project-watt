@@ -3,9 +3,6 @@ extends Control
 @onready var character: Sprite2D = $Character
 @onready var depth_label: Label = $Depth
 
-# Reference to the main game manager
-@onready var GM: GameManager = get_node("/root/GameManager")
-
 var rock_grid: Node2D
 var ore_grid: Node2D
 
@@ -21,15 +18,12 @@ var ore_sprites: Array = []
 
 # Cache for performance
 var _last_rendered_depth: float = -1.0
+var rng := RandomNumberGenerator.new()
 
 func _ready() -> void:
     set_process_input(true)
     world_texture = load("res://assets/tiles/world_tileset.png") as Texture2D
 
-    if GM == null:
-        push_error("MiningView: cannot find /root/GameManager autoload")
-        return
-    
     # Connect to the proper typed signals
     _connect_game_signals()
     
@@ -108,8 +102,6 @@ func _input(event: InputEvent) -> void:
             _handle_tile_click(grid_x, grid_y)
 
 func _handle_tile_click(grid_x: int, grid_y: int) -> void:
-    if GM == null:
-        return
     var current_depth: float = GM.game_state.depth
     var base_world_row: int = int(floor(current_depth / WorldData.DEPTH_PER_TILE))
     var world_row: int = base_world_row + (grid_y - character_grid_pos.y)
@@ -132,16 +124,11 @@ func _on_tool_upgraded(tool: MiningTool) -> void:
     render_mining_view()
 
 func _update_depth_label() -> void:
-    if GM == null:
-        return
     var current_depth: float = GM.game_state.depth
     var rock_name: String = WorldData.get_rock_name_for_depth(current_depth)
     depth_label.text = "Depth: %.1f m (%s)" % [current_depth, rock_name]
 
 func _update_single_tile(world_tile_pos: Vector2i) -> void:
-    if GM == null:
-        return
-    
     # Convert world position to grid position
     var current_depth: float = GM.game_state.depth
     var base_world_row: int = int(floor(current_depth / WorldData.DEPTH_PER_TILE))
@@ -160,9 +147,6 @@ func _update_single_tile(world_tile_pos: Vector2i) -> void:
     _setup_ore_sprite(ore_sprites[grid_x][grid_y], world_tile_pos.x, world_tile_pos.y, rock_type)
 
 func render_mining_view() -> void:
-    if GM == null:
-        return
-
     _update_depth_label()
 
     var current_depth: float = GM.game_state.depth
@@ -217,16 +201,12 @@ func _setup_ore_sprite(sprite: Sprite2D, grid_x: int, world_row: int, rock_type:
 func get_deterministic_variation(x: int, world_row: int, rock_type: WorldData.RockType) -> Color:
     var seed_value: int = x * 73856093 ^ world_row * 19349663 ^ int(rock_type) * 83492791
     if seed_value < 0: seed_value = -seed_value
-    var rng := RandomNumberGenerator.new()
     rng.seed = seed_value
     var brightness: float = rng.randf_range(0.88, 1.12)
     var tint: float = rng.randf_range(0.97, 1.03)
     return Color(brightness * tint, brightness, brightness / tint, 1.0)
 
 func create_tunnel_effect(current_depth: float) -> void:
-    if GM == null:
-        return
-    
     var max_row: int = GM.game_state.max_mined_row
     var base_world_row: int = int(floor(current_depth / WorldData.DEPTH_PER_TILE))
     

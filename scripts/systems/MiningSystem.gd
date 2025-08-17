@@ -50,10 +50,9 @@ func mine_tile(tile_pos: Vector2i, is_auto_mining: bool = false) -> bool:
     
     # Update progression for center column only
     if tile_pos.x == auto_mine_column and tile_pos.y > game_state.max_mined_row:
-        game_state.max_mined_row = tile_pos.y
-        
         # Auto-mining advances depth
         if is_auto_mining:
+            game_state.max_mined_row = tile_pos.y
             game_state.depth += WorldData.DEPTH_PER_TILE
             auto_mining_progressed.emit(game_state.depth)
     
@@ -99,6 +98,15 @@ func _on_auto_mine_tick() -> void:
 func _auto_mine_next_tile() -> void:
     var next_row := game_state.max_mined_row + 1
     var target := Vector2i(auto_mine_column, next_row)
+    
+    while tile_tracker.is_tile_mined(target):
+        # Update state as we "fall" through the empty space
+        game_state.max_mined_row = target.y
+        game_state.depth += WorldData.DEPTH_PER_TILE
+        auto_mining_progressed.emit(game_state.depth)
+        # Move to the next tile down
+        target.y += 1
+    
     mine_tile(target, true)
 
 # Resource generation

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dju15fmft46jk"]
+
+[ext_resource type="Script" uid="uid://dwa3gqp3xc52l" path="res://scripts/views/UpgradesPanel.gd" id="1_vymdn"]
+
+[node name="UpgradesPanel" type="VBoxContainer"]
+script = ExtResource("1_vymdn")
