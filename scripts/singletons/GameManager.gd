@@ -53,12 +53,3 @@ func reset_game() -> void:
 var auto_mine_x: int:
     get: return mining_system.auto_mine_column
     set(value): mining_system.auto_mine_column = value
-
-# Signal forwarding for backwards compatibility
-func get_tool() -> Dictionary:
-    return {
-        "name": mining_tool.tool_name,
-        "level": mining_tool.level,
-        "power": mining_tool.power,
-        "crit_chance": mining_tool.crit_chance
-    }

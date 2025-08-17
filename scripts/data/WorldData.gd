@@ -43,7 +43,7 @@ const MATERIAL_CONFIG := {
     "Dirt": {"hardness": 1, "ores": {"Copper": 0.01}},
     "Stone": {"hardness": 2, "ores": {"Iron": 0.05}},
     "Deep Stone": {"hardness": 3, "ores": {"Silver": 0.03, "Gold": 0.02}},
-    "Bedrock": {"hardness": 999, "ores": {}},
+    "Bedrock": {"hardness": 4, "ores": {}},
     "Lava Rock": {"hardness": 5, "ores": {"Obsidian": 0.02, "Gold": 0.01}},
 }
 

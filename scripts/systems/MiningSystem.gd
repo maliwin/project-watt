@@ -78,12 +78,7 @@ func _setup_auto_mining_timer() -> void:
     _auto_mine_timer.start()
 
 func _on_auto_mine_tick() -> void:
-    if not game_state:
-        return
-        
     var mining_speed := game_state.mining_speed
-    if mining_speed <= 0.0:
-        return
     
     _auto_mine_accumulator += mining_speed * AUTO_MINE_TICK_INTERVAL
     
