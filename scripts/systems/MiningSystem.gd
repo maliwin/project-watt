@@ -1,20 +1,17 @@
 class_name MiningSystem
 extends Node
 
-# Typed signals - no more magic strings!
 signal tile_mined_successfully(tile_pos: Vector2i, resources: Array[String])
 signal mining_failed(tile_pos: Vector2i, reason: String)
 signal auto_mining_progressed(new_depth: float)
 
 @export var auto_mine_column: int = 12
 
-# Dependencies - injected, not global singletons
 var game_state: GameState
 var inventory_system: InventorySystem 
 var mining_tool: MiningTool
 var tile_tracker: TileTracker
 
-# Auto-mining system
 var _auto_mine_timer: Timer
 var _auto_mine_accumulator: float = 0.0
 const AUTO_MINE_TICK_INTERVAL: float = 0.1
@@ -72,7 +69,6 @@ func mine_tile(tile_pos: Vector2i, is_auto_mining: bool = false) -> bool:
 func player_mine_tile(tile_pos: Vector2i) -> bool:
     return mine_tile(tile_pos, false)
 
-# Auto-mining system
 func _setup_auto_mining_timer() -> void:
     _auto_mine_timer = Timer.new()
     _auto_mine_timer.wait_time = AUTO_MINE_TICK_INTERVAL

@@ -5,16 +5,13 @@ signal inventory_changed(inventory: Dictionary)
 signal resource_added(resource_name: String, amount: int)
 signal resource_removed(resource_name: String, amount: int)
 
-# Resource configurations
 const SELL_PRICES := {
     "Dirt": 1, "Stone": 2, "Deep Stone": 3, "Bedrock": 0, "Lava Rock": 4,
     "Copper": 5, "Iron": 8, "Silver": 12, "Gold": 20, "Obsidian": 25,
 }
 
-# Private inventory storage
 var _inventory: Dictionary = {}
 
-# Public read-only access
 var inventory: Dictionary:
     get: return _inventory.duplicate()
 

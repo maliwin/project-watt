@@ -1,11 +1,9 @@
 class_name GameState
 extends Resource
 
-# Signals for state changes
 signal depth_changed(new_depth: float)
 signal currency_changed(new_currency: int)
 
-# Core game state with proper typing
 @export var depth: float = 0.0:
     set(value):
         if depth != value:
@@ -21,7 +19,6 @@ signal currency_changed(new_currency: int)
 @export var mining_speed: float = 0.5
 @export var max_mined_row: int = -1
 
-# Initialize with default values
 func _init():
     depth = 0.0
     currency = 0

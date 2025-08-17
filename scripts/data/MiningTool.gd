@@ -8,7 +8,7 @@ signal tool_upgraded(tool: MiningTool)
     set(value):
         if level != value:
             level = value
-            power = level  # Simple 1:1 scaling for now
+            power = level
             tool_upgraded.emit(self)
 
 @export var power: int = 1

@@ -1,12 +1,10 @@
 class_name UpgradeSystem
 extends Node
 
-# Typed signals
 signal upgrade_purchased(upgrade_type: String, new_level: int)
 signal upgrade_failed(upgrade_type: String, reason: String)
 signal all_resources_sold(total_value: int)
 
-# Dependencies
 var game_state: GameState
 var inventory_system: InventorySystem
 var mining_tool: MiningTool
@@ -28,7 +26,7 @@ func upgrade_pickaxe() -> bool:
     
     var cost := mining_tool.get_upgrade_cost()
     game_state.currency -= cost
-    mining_tool.level += 1  # This will trigger the tool's signal
+    mining_tool.level += 1
     
     upgrade_purchased.emit("pickaxe", mining_tool.level)
     return true

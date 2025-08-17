@@ -10,17 +10,13 @@ func _ready() -> void:
     _connect_game_signals()
 
 func _connect_game_signals() -> void:
-    # Connect to GameState signals
     GM.game_state.currency_changed.connect(_on_currency_changed)
-    # Connect to InventorySystem signals
     GM.inventory_system.inventory_changed.connect(_on_inventory_changed)
-    # Connect to MiningTool signals
     GM.mining_tool.tool_upgraded.connect(_on_tool_upgraded)
 
 func _refresh_display() -> void:
     var lines: Array[String] = []
     
-    # Resources section with sell prices
     if _cached_inventory.is_empty():
         lines.append("No resources yet.")
     else:
@@ -36,21 +32,17 @@ func _refresh_display() -> void:
                 else:
                     lines.append("%s: %d" % [resource_name, amount])
     
-    # Currency section
     lines.append("")
     lines.append("💰 Currency: $%d" % _cached_currency)
     
-    # Tool section  
     lines.append("")
     var upgrade_cost: int = GM.mining_tool.get_upgrade_cost()
     lines.append("⛏️ Pickaxe Level %d (Power %d)" % [GM.mining_tool.level, GM.mining_tool.power])
     lines.append("   Next upgrade: $%d" % upgrade_cost)
     
-    # Mining stats
     lines.append("")
     lines.append("⚡ Mining Speed: %.1f tiles/sec" % GM.game_state.mining_speed)
     
-    # Total inventory value
     var total_value = GM.inventory_system.get_total_sell_value()
     if total_value > 0:
         lines.append("📦 Total inventory value: $%d" % total_value)

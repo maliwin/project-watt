@@ -9,24 +9,19 @@ extends Node
 @onready var upgrade_system := UpgradeSystem.new()
 
 func _ready() -> void:
-    # Add systems as children
     add_child(inventory_system)
     add_child(tile_tracker) 
     add_child(mining_system)
     add_child(upgrade_system)
     
-    # Initialize system dependencies
     mining_system.initialize(game_state, inventory_system, mining_tool, tile_tracker)
     upgrade_system.initialize(game_state, inventory_system, mining_tool)
     
-    # Connect cross-system signals if needed
     _setup_signal_connections()
 
 func _setup_signal_connections() -> void:
-    # Example: Could connect mining_system.auto_mining_progressed to UI updates
     pass
 
-# Public API methods - delegate to appropriate systems
 func can_mine_tile(tile_pos: Vector2i) -> bool:
     return mining_system.can_mine_tile(tile_pos)
 
@@ -54,23 +49,6 @@ func reset_game() -> void:
     inventory_system.reset()
     tile_tracker.reset()
     mining_system.reset()
-
-# Backwards compatibility getters (temporary during transition)
-var game_data: Dictionary:
-    get:
-        return {
-            "depth": game_state.depth,
-            "currency": game_state.currency,
-            "inventory": inventory_system.inventory,
-            "tool": {
-                "name": mining_tool.tool_name,
-                "level": mining_tool.level,
-                "power": mining_tool.power,
-                "crit_chance": mining_tool.crit_chance
-            },
-            "mining_speed": game_state.mining_speed,
-            "max_mined_row": game_state.max_mined_row
-        }
 
 var auto_mine_x: int:
     get: return mining_system.auto_mine_column

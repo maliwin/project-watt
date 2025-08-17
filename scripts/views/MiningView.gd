@@ -16,7 +16,6 @@ var world_texture: Texture2D
 var rock_sprites: Array = []
 var ore_sprites: Array = []
 
-# Cache for performance
 var _last_rendered_depth: float = -1.0
 var rng := RandomNumberGenerator.new()
 
@@ -24,7 +23,6 @@ func _ready() -> void:
     set_process_input(true)
     world_texture = load("res://assets/tiles/world_tileset.png") as Texture2D
 
-    # Connect to the proper typed signals
     _connect_game_signals()
     
     setup_rock_grid()
@@ -32,18 +30,14 @@ func _ready() -> void:
     render_mining_view()
 
 func _connect_game_signals() -> void:
-    # Connect to GameState signals
     GM.game_state.depth_changed.connect(_on_depth_changed)
     GM.game_state.currency_changed.connect(_on_game_state_changed)
     
-    # Connect to InventorySystem signals  
     GM.inventory_system.inventory_changed.connect(_on_game_state_changed)
     
-    # Connect to MiningSystem signals
     GM.mining_system.tile_mined_successfully.connect(_on_tile_mined)
     GM.mining_system.auto_mining_progressed.connect(_on_depth_changed)
     
-    # Connect to tool signals
     GM.mining_tool.tool_upgraded.connect(_on_tool_upgraded)
 
 func setup_rock_grid() -> void:
@@ -107,7 +101,6 @@ func _handle_tile_click(grid_x: int, grid_y: int) -> void:
     var world_row: int = base_world_row + (grid_y - character_grid_pos.y)
     GM.player_mine_tile(Vector2i(grid_x, world_row))
 
-# ---------- Event Handlers - Clean typed signal handling ----------
 func _on_depth_changed(new_depth: float) -> void:
     if abs(new_depth - _last_rendered_depth) >= WorldData.DEPTH_PER_TILE * 0.5:
         render_mining_view()

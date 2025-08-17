@@ -5,7 +5,6 @@ const DEPTH_PER_TILE: float = 2.0
 
 enum RockType { AIR, DIRT, STONE, DEEP_STONE, BEDROCK, LAVA_ROCK }
 
-# World configuration as typed dictionaries instead of magic strings
 const ROCK_CONFIG := {
     RockType.AIR: {
         "depth_range": Vector2i(-99999, 0),
