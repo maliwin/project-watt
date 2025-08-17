@@ -25,7 +25,6 @@ func _build_buttons() -> void:
     self.add_child(upg_btn)
 
 func _on_sell_all_pressed() -> void:
-    print(GM.game_state, " @ ", GM.game_state.currency_changed)
     GM.sell_all()
 
 func _on_upgrade_pickaxe_pressed() -> void:

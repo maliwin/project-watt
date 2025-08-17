@@ -16,7 +16,7 @@ signal currency_changed(new_currency: int)
             currency = value
             currency_changed.emit(currency)
 
-@export var mining_speed: float = 423.5
+@export var mining_speed: float = 1.0
 @export var max_mined_row: int = -1
 
 func reset() -> void:
