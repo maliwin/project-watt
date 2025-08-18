@@ -1,3 +1,4 @@
+# warning-disable unused_signal
 extends Node
 
 signal tool_upgraded(tool: MiningTool)

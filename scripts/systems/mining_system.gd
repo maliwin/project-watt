@@ -5,7 +5,7 @@ extends Node
 @export var auto_mine_column: int = 12
 
 var game_state: GameState
-var inventory_system: InventorySystem 
+var inventory_system: InventorySystem
 var mining_tool: MiningTool
 var tile_tracker: TileTracker
 var world_data: WorldData
@@ -24,16 +24,23 @@ func _ready() -> void:
 
 func initialize(p_game_state: GameState, p_inventory: InventorySystem, p_tool: MiningTool, p_tracker: TileTracker, p_world_data: WorldData) -> void:
     game_state = p_game_state
-    inventory_system = p_inventory  
+    inventory_system = p_inventory
     mining_tool = p_tool
     tile_tracker = p_tracker
     world_data = p_world_data
-    
+
+
+func start_autominer():
+    _auto_mine_accumulator = 0.0
     _auto_mine_timer.start()
+
+func stop_autominer():
+    _auto_mine_timer.stop()
 
 func can_mine_tile(tile_pos: Vector2i) -> bool:
     if tile_tracker.is_tile_mined(tile_pos):
         return false
+    
     
     var depth := tile_pos.y * world_data.DEPTH_PER_TILE
     var rock_name := world_data.get_rock_name_for_depth(depth)
@@ -49,19 +56,15 @@ func mine_tile(tile_pos: Vector2i, is_auto_mining: bool = false) -> bool:
     tile_tracker.mine_tile(tile_pos)
     
     if tile_pos.x == auto_mine_column and tile_pos.y > game_state.max_mined_row:
-        if is_auto_mining:
-            game_state.max_mined_row = tile_pos.y
-            game_state.depth += world_data.DEPTH_PER_TILE
-            Event.auto_mining_progressed.emit(game_state.depth)
+        game_state.max_mined_row = tile_pos.y
+        game_state.depth = game_state.max_mined_row * world_data.DEPTH_PER_TILE
+        Event.auto_mining_progressed.emit(game_state.depth)
     
     var resources := _get_tile_resources(tile_pos)
     for resource in resources:
         inventory_system.add_to_pouch(resource)
     
     Event.tile_mined_successfully.emit(tile_pos, resources)
-    
-    if randf() < 0.01:
-        tile_tracker.clear_distant_chunks(tile_pos)
     
     return true
 
@@ -82,9 +85,10 @@ func _auto_mine_next_tile() -> void:
     var target := Vector2i(auto_mine_column, next_row)
     
     while tile_tracker.is_tile_mined(target):
-        game_state.max_mined_row = target.y
-        game_state.depth += world_data.DEPTH_PER_TILE
-        Event.auto_mining_progressed.emit(game_state.depth)
+        if target.y > game_state.max_mined_row:
+            game_state.max_mined_row = target.y
+            game_state.depth = game_state.max_mined_row * world_data.DEPTH_PER_TILE
+            Event.auto_mining_progressed.emit(game_state.depth)
         target.y += 1
     
     mine_tile(target, true)

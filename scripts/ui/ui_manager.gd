@@ -1,23 +1,25 @@
 extends Control
 
-# These variables connect to the scenes we just instanced.
-@onready var mining_hud = $MiningHUD
-@onready var surface_hud = $SurfaceHUD
+@onready var mining_panel = $MiningPanel
+@onready var surface_panel = $SurfacePanel
+# This path goes up from UIManager, out of UILayer, then finds MiningView.
+@onready var mining_view = $"../../MiningView" 
 
 func _ready():
-    # Listen for the state change signal from our GameState.
     Event.state_changed.connect(_on_player_state_changed)
     
-    mining_hud.return_to_surface_pressed.connect(GM.return_to_surface)
+    mining_panel.return_to_surface_pressed.connect(GM.return_to_surface)
+    surface_panel.continue_mine_pressed.connect(GM.continue_mine)
+    surface_panel.start_new_mine_pressed.connect(GM.start_new_mine)
     
-    # Set the initial UI state when the game starts.
     _on_player_state_changed(GM.game_state.current_state)
 
-# This function shows/hides the correct HUD based on the player's state.
 func _on_player_state_changed(new_state: GameState.PlayerState):
     if new_state == GameState.PlayerState.MINING:
-        mining_hud.show()
-        surface_hud.hide()
+        mining_panel.show()
+        surface_panel.hide()
+        mining_view.show()
     elif new_state == GameState.PlayerState.ON_SURFACE:
-        mining_hud.hide()
-        surface_hud.show()
+        mining_panel.hide()
+        surface_panel.show()
+        mining_view.hide()

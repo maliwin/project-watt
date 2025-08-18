@@ -7,7 +7,7 @@ extends Control
 
 const ZOOM_OUT_LEVEL = 1.0
 const ZOOM_OUT_WIDTH = 25
-const ZOOM_IN_LEVEL = 3.5 
+const ZOOM_IN_LEVEL = 3.5
 const ZOOM_IN_WIDTH = 7
 
 var is_zoomed_in: bool = false
@@ -18,6 +18,7 @@ var grid_height: int = 40
 var character_grid_pos: Vector2i
 
 var _last_rendered_depth: float = -1.0
+var _camera_center_pos: Vector2
 
 func _ready() -> void:
     _connect_game_signals()
@@ -37,6 +38,8 @@ func _ready() -> void:
     rock_layer.tile_set = tile_set
     ore_layer.tile_set = tile_set
     
+    _last_rendered_depth = GM.game_state.depth
+    
     setup_character()
     _apply_zoom()
     render_mining_view()
@@ -50,6 +53,17 @@ func _connect_game_signals() -> void:
     
     Event.screen_clicked.connect(_on_screen_clicked)
     Event.zoom_level_changed.connect(_on_zoom_level_changed)
+    
+    # BUGFIX: Connect to state changes to reset the view.
+    Event.state_changed.connect(_on_player_state_changed)
+
+# BUGFIX: This function ensures the view resets when a mining session starts.
+func _on_player_state_changed(new_state: GameState.PlayerState):
+    if new_state == GameState.PlayerState.MINING:
+        # Sync the view's internal depth with the official game depth.
+        _last_rendered_depth = GM.game_state.depth
+        # Force an immediate redraw to show the correct starting location.
+        render_mining_view()
 
 func setup_character() -> void:
     var character_texture := load("res://sprites/character.png") as Texture2D
@@ -68,17 +82,19 @@ func _apply_zoom() -> void:
     
     character_grid_pos = Vector2i(grid_width / 2, grid_height / 2)
     
-    # Calculate the center position of the character's tile.
-    var center_pos = Vector2(
+    _camera_center_pos = Vector2(
         character_grid_pos.x * tile_size + tile_size * 0.5,
         character_grid_pos.y * tile_size + tile_size * 0.5
     )
-    camera.position = center_pos
-    character.position = center_pos - Vector2(0, tile_size)
+    camera.position = _camera_center_pos
+    character.position = _camera_center_pos
     
     render_mining_view()
 
 func _handle_tile_click(grid_x: int, grid_y: int) -> void:
+    if abs(grid_x - character_grid_pos.x) > 1 or abs(grid_y - character_grid_pos.y) > 1:
+        return
+
     var current_depth: float = GM.game_state.depth
     var base_world_row: int = int(floor(current_depth / WorldData.DEPTH_PER_TILE))
     var world_row: int = base_world_row + (grid_y - character_grid_pos.y)
@@ -89,39 +105,22 @@ func _handle_tile_click(grid_x: int, grid_y: int) -> void:
     GM.player_mine_tile(Vector2i(world_col, world_row))
 
 func _on_depth_changed(new_depth: float) -> void:
-    var fall_distance = new_depth - _last_rendered_depth
+    var fall_pixels = (new_depth - _last_rendered_depth) / WorldData.DEPTH_PER_TILE * tile_size
 
-    # Ignore tiny changes or the very first setup
-    if fall_distance < WorldData.DEPTH_PER_TILE * 0.5 or _last_rendered_depth == -1.0:
-        render_mining_view()
-        _last_rendered_depth = new_depth
+    if abs(fall_pixels) < 1.0:
+        if _last_rendered_depth != new_depth:
+            _last_rendered_depth = new_depth
+            render_mining_view()
         return
 
-    # Update the depth tracker so we know the new target
+    character.position.y -= fall_pixels
+    
     _last_rendered_depth = new_depth
-
-    # Calculate how many pixels the character and camera need to fall
-    var fall_pixels = fall_distance / WorldData.DEPTH_PER_TILE * tile_size
-
-    # --- Pre-render the world at the destination ---
-    # 1. Store the camera's current position
-    var old_camera_pos = camera.position
-    # 2. Move the camera instantly to the new depth to render the tiles there
-    camera.position.y += fall_pixels
     render_mining_view()
-    # 3. Move the camera back to where it started, so we can animate it
-    camera.position = old_camera_pos
-    # --- End of pre-rendering ---
 
-    # Create a tween that will animate camera and character in parallel
-    var tween = create_tween().set_parallel(true)
-
-    # Animate the camera moving smoothly to its new position
-    tween.tween_property(camera, "position:y", camera.position.y + fall_pixels, 0.4).set_ease(Tween.EASE_OUT)
-
-    # Animate the character also moving to its new position, but with a bounce
-    var character_target_y = character.position.y + fall_pixels
-    tween.tween_property(character, "position:y", character_target_y, 0.4).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BOUNCE)
+    var tween = create_tween()
+    var resting_y_pos = _camera_center_pos.y
+    tween.tween_property(character, "position:y", resting_y_pos, 0.4).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BOUNCE)
 
 func _on_tile_mined(tile_pos: Vector2i, _resources: Array[String]) -> void:
     _update_single_tile(tile_pos)
@@ -137,8 +136,7 @@ func _on_tool_upgraded(_tool: MiningTool) -> void:
     render_mining_view()
 
 func _update_single_tile(world_tile_pos: Vector2i) -> void:
-    var current_depth: float = GM.game_state.depth
-    var base_world_row: int = int(floor(current_depth / GM.world_data.DEPTH_PER_TILE))
+    var base_world_row: int = int(floor(_last_rendered_depth / GM.world_data.DEPTH_PER_TILE))
     var grid_y: int = world_tile_pos.y - base_world_row + character_grid_pos.y
     
     var base_world_col: int = GM.auto_mine_x - character_grid_pos.x
@@ -154,9 +152,8 @@ func _update_single_tile(world_tile_pos: Vector2i) -> void:
 func render_mining_view() -> void:
     rock_layer.clear()
     ore_layer.clear()
-
-    var current_depth: float = GM.game_state.depth
-    var base_world_row: int = int(floor(current_depth / GM.world_data.DEPTH_PER_TILE))
+    
+    var base_world_row: int = int(floor(_last_rendered_depth / GM.world_data.DEPTH_PER_TILE))
     var base_world_col: int = GM.auto_mine_x - character_grid_pos.x
 
     for x in range(grid_width):
@@ -188,11 +185,9 @@ func create_placeholder_texture(width: int, height: int, color: Color) -> ImageT
     return texture
 
 func _on_screen_clicked(screen_position: Vector2) -> void:
-    # This logic translates the click position into a grid coordinate
     var world_pos = camera.get_canvas_transform().affine_inverse() * screen_position
     var grid_pos = rock_layer.local_to_map(world_pos)
     
-    # Check if the click is within the visible grid
     if grid_pos.x >= 0 and grid_pos.x < grid_width and grid_pos.y >= 0 and grid_pos.y < grid_height:
         _handle_tile_click(grid_pos.x, grid_pos.y)
 

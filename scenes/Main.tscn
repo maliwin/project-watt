@@ -4,8 +4,8 @@
 [ext_resource type="TileSet" uid="uid://bwkesjownidm3" path="res://assets/tiles/world_tileset.tres" id="2_rarhs"]
 [ext_resource type="Script" uid="uid://cecgx64wcwgqn" path="res://scripts/ui/ui_manager.gd" id="5_nxtc6"]
 [ext_resource type="Script" uid="uid://bkicl0mjgegmp" path="res://scripts/tools/player_input.gd" id="6_c01mt"]
-[ext_resource type="PackedScene" uid="uid://b1fnlnr2m7krs" path="res://scenes/ui/MiningHUD.tscn" id="6_jlsqs"]
-[ext_resource type="PackedScene" uid="uid://baye2h43jfsal" path="res://scenes/ui/SurfaceHUD.tscn" id="7_q8u5g"]
+[ext_resource type="PackedScene" uid="uid://b1fnlnr2m7krs" path="res://scenes/ui/MiningPanel.tscn" id="6_jlsqs"]
+[ext_resource type="PackedScene" uid="uid://baye2h43jfsal" path="res://scenes/ui/SurfacePanel.tscn" id="7_q8u5g"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -79,10 +79,10 @@ size_flags_horizontal = 4
 size_flags_vertical = 3
 script = ExtResource("5_nxtc6")
 
-[node name="MiningHUD" parent="MainContent/UILayer/UIManager" instance=ExtResource("6_jlsqs")]
+[node name="MiningPanel" parent="MainContent/UILayer/UIManager" instance=ExtResource("6_jlsqs")]
 layout_mode = 1
 
-[node name="SurfaceHUD" parent="MainContent/UILayer/UIManager" instance=ExtResource("7_q8u5g")]
+[node name="SurfacePanel" parent="MainContent/UILayer/UIManager" instance=ExtResource("7_q8u5g")]
 layout_mode = 1
 
 [node name="BottomBar" type="PanelContainer" parent="."]
