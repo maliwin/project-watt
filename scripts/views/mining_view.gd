@@ -20,8 +20,6 @@ var character_grid_pos: Vector2i
 var _last_rendered_depth: float = -1.0
 
 func _ready() -> void:
-    set_process_input(false)
-    set_process_unhandled_input(true)
     _connect_game_signals()
 
     var tile_set := TileSet.new()
@@ -49,16 +47,16 @@ func _connect_game_signals() -> void:
     Event.currency_changed.connect(_on_game_state_changed)
     Event.tile_mined_successfully.connect(_on_tile_mined)
     Event.auto_mining_progressed.connect(_on_depth_changed)
+    
+    Event.screen_clicked.connect(_on_screen_clicked)
+    Event.zoom_level_changed.connect(_on_zoom_level_changed)
 
 func setup_character() -> void:
-    # This function is now only responsible for the character's appearance, not its position.
     var character_texture := load("res://sprites/character.png") as Texture2D
     if character_texture:
         character.texture = character_texture
     else:
         character.texture = create_placeholder_texture(tile_size, tile_size, Color.CYAN)
-    character.visible = true
-    character.z_index = 100
 
 func _apply_zoom() -> void:
     if is_zoomed_in:
@@ -144,11 +142,6 @@ func _update_single_tile(world_tile_pos: Vector2i) -> void:
     ore_layer.set_cell(map_coords, -1)
 
 func render_mining_view() -> void:
-    if not is_node_ready():
-        return
-    
-    _on_game_state_changed()
-    
     rock_layer.clear()
     ore_layer.clear()
 
@@ -177,28 +170,22 @@ func render_mining_view() -> void:
                     var ore_atlas_coords = GM.world_data.get_atlas_coords_for_ore(ore_name)
                     ore_layer.set_cell(map_coords, 0, ore_atlas_coords)
 
-    create_tunnel_effect(current_depth)
-
-func create_tunnel_effect(current_depth: float) -> void:
-    var max_row: int = GM.game_state.max_mined_row
-    var base_world_row: int = int(floor(current_depth / WorldData.DEPTH_PER_TILE))
-    var base_world_col: int = GM.auto_mine_x - character_grid_pos.x
-    
-    for y in range(grid_height):
-        var world_row: int = base_world_row + (y - character_grid_pos.y)
-        if world_row <= max_row:
-            var world_col: int = GM.auto_mine_x
-            var grid_x: int = world_col - base_world_col
-            
-            if grid_x >= 0 and grid_x < grid_width:
-                var grid_pos = Vector2i(grid_x, y)
-                if not GM.is_tile_mined(world_col, world_row):
-                    rock_layer.set_cell(grid_pos, -1)
-                    ore_layer.set_cell(grid_pos, -1)
-
 func create_placeholder_texture(width: int, height: int, color: Color) -> ImageTexture:
     var image := Image.create(width, height, false, Image.FORMAT_RGBA8)
     image.fill(color)
     var texture := ImageTexture.new()
     texture.set_image(image)
     return texture
+
+func _on_screen_clicked(screen_position: Vector2) -> void:
+    # This logic translates the click position into a grid coordinate
+    var world_pos = camera.get_canvas_transform().affine_inverse() * screen_position
+    var grid_pos = rock_layer.local_to_map(world_pos)
+    
+    # Check if the click is within the visible grid
+    if grid_pos.x >= 0 and grid_pos.x < grid_width and grid_pos.y >= 0 and grid_pos.y < grid_height:
+        _handle_tile_click(grid_pos.x, grid_pos.y)
+
+func _on_zoom_level_changed(zoom_in: bool) -> void:
+    is_zoomed_in = zoom_in
+    _apply_zoom()
