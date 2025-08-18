@@ -91,27 +91,37 @@ func _handle_tile_click(grid_x: int, grid_y: int) -> void:
 func _on_depth_changed(new_depth: float) -> void:
     var fall_distance = new_depth - _last_rendered_depth
 
-    # Only animate if there's a noticeable fall and it's not the initial setup
+    # Ignore tiny changes or the very first setup
     if fall_distance < WorldData.DEPTH_PER_TILE * 0.5 or _last_rendered_depth == -1.0:
         render_mining_view()
         _last_rendered_depth = new_depth
         return
 
-    # Render the world at the new depth first, so there's a hole to fall into
-    render_mining_view()
+    # Update the depth tracker so we know the new target
     _last_rendered_depth = new_depth
 
-    # Calculate fall distance in pixels
+    # Calculate how many pixels the character and camera need to fall
     var fall_pixels = fall_distance / WorldData.DEPTH_PER_TILE * tile_size
 
-    # Create a tween for the animation
-    var tween = create_tween()
+    # --- Pre-render the world at the destination ---
+    # 1. Store the camera's current position
+    var old_camera_pos = camera.position
+    # 2. Move the camera instantly to the new depth to render the tiles there
+    camera.position.y += fall_pixels
+    render_mining_view()
+    # 3. Move the camera back to where it started, so we can animate it
+    camera.position = old_camera_pos
+    # --- End of pre-rendering ---
 
-    # Move the character sprite up instantly so it can fall
-    character.position.y -= fall_pixels
+    # Create a tween that will animate camera and character in parallel
+    var tween = create_tween().set_parallel(true)
 
-    # Animate the character falling back to its centered position
-    tween.tween_property(character, "position:y", character.position.y + fall_pixels, 0.4).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BOUNCE)
+    # Animate the camera moving smoothly to its new position
+    tween.tween_property(camera, "position:y", camera.position.y + fall_pixels, 0.4).set_ease(Tween.EASE_OUT)
+
+    # Animate the character also moving to its new position, but with a bounce
+    var character_target_y = character.position.y + fall_pixels
+    tween.tween_property(character, "position:y", character_target_y, 0.4).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BOUNCE)
 
 func _on_tile_mined(tile_pos: Vector2i, _resources: Array[String]) -> void:
     _update_single_tile(tile_pos)
