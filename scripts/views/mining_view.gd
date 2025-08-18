@@ -4,6 +4,8 @@ extends Control
 @onready var rock_layer: TileMapLayer = $SubViewportContainer/SubViewport/RockLayer
 @onready var ore_layer: TileMapLayer = $SubViewportContainer/SubViewport/OreLayer
 @onready var camera: Camera2D = $SubViewportContainer/SubViewport/Camera2D
+# FIX: Add a reference to the SubViewportContainer to get its position
+@onready var subviewport_container: SubViewportContainer = $SubViewportContainer
 
 const ZOOM_OUT_LEVEL = 1.0
 const ZOOM_OUT_WIDTH = 25
@@ -185,7 +187,11 @@ func create_placeholder_texture(width: int, height: int, color: Color) -> ImageT
     return texture
 
 func _on_screen_clicked(screen_position: Vector2) -> void:
-    var world_pos = camera.get_canvas_transform().affine_inverse() * screen_position
+    # FIX: Convert global screen coordinates to local coordinates within the viewport container
+    var local_pos = subviewport_container.get_global_transform().affine_inverse() * screen_position
+    
+    # Now use the corrected local position to calculate the world position inside the viewport
+    var world_pos = camera.get_canvas_transform().affine_inverse() * local_pos
     var grid_pos = rock_layer.local_to_map(world_pos)
     
     if grid_pos.x >= 0 and grid_pos.x < grid_width and grid_pos.y >= 0 and grid_pos.y < grid_height:
