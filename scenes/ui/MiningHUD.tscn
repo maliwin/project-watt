@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://b1fnlnr2m7krs"]
 
-[ext_resource type="Script" uid="uid://db3ckeqeg6h64" path="res://scripts/ui/MiningHUD.gd" id="1_61bld"]
+[ext_resource type="Script" uid="uid://db3ckeqeg6h64" path="res://scripts/ui/mining_hud.gd" id="1_61bld"]
 [ext_resource type="PackedScene" uid="uid://cyapcu0jblhl4" path="res://scenes/ui/ResourceDisplay.tscn" id="1_ca1mj"]
 
 [node name="MiningHUD" type="Control"]

@@ -6,7 +6,7 @@ extends Control
 
 func _ready():
     # Listen for the state change signal from our GameState.
-    GM.game_state.state_changed.connect(_on_player_state_changed)
+    Event.state_changed.connect(_on_player_state_changed)
     
     mining_hud.return_to_surface_pressed.connect(GM.return_to_surface)
     

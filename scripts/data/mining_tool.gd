@@ -1,14 +1,12 @@
 class_name MiningTool
 extends Resource
 
-signal tool_upgraded(tool: MiningTool)
-
 @export var tool_name: String = "Pickaxe"
 @export var level: int = 1:
     set(value):
         if level != value:
             level = value
-            tool_upgraded.emit(self)
+            Event.tool_upgraded.emit(self)
 
 @export var power: int = 1
 @export var crit_chance: float = 0.05

@@ -61,12 +61,12 @@ func _unhandled_input(event: InputEvent) -> void:
             _apply_zoom()
 
 func _connect_game_signals() -> void:
-    GM.game_state.depth_changed.connect(_on_depth_changed)
-    GM.game_state.currency_changed.connect(_on_game_state_changed)
-    # GM.inventory_system.inventory_changed.connect(_on_game_state_changed)
-    GM.mining_system.tile_mined_successfully.connect(_on_tile_mined)
-    GM.mining_system.auto_mining_progressed.connect(_on_depth_changed)
-    GM.mining_tool.tool_upgraded.connect(_on_tool_upgraded)
+    Event.depth_changed.connect(_on_depth_changed)
+    Event.currency_changed.connect(_on_game_state_changed)
+    # GM.inventory_system.pouch_changed.connect(_on_game_state_changed)
+    Event.tile_mined_successfully.connect(_on_tile_mined)
+    Event.auto_mining_progressed.connect(_on_depth_changed)
+    # GM.mining_tool.tool_upgraded.connect(_on_tool_upgraded)
 
 func setup_character() -> void:
     # This function is now only responsible for the character's appearance, not its position.
@@ -93,10 +93,8 @@ func _apply_zoom() -> void:
         character_grid_pos.x * tile_size + tile_size * 0.5,
         character_grid_pos.y * tile_size + tile_size * 0.5
     )
-    # Set BOTH the camera and the character to this exact same position.
     camera.position = center_pos
-    if is_node_ready(): # Check if the node is ready before accessing children
-        character.position = center_pos
+    character.position = center_pos - Vector2(0, tile_size)
     
     render_mining_view()
 
@@ -111,9 +109,29 @@ func _handle_tile_click(grid_x: int, grid_y: int) -> void:
     GM.player_mine_tile(Vector2i(world_col, world_row))
 
 func _on_depth_changed(new_depth: float) -> void:
-    if abs(new_depth - _last_rendered_depth) >= WorldData.DEPTH_PER_TILE * 0.5:
+    var fall_distance = new_depth - _last_rendered_depth
+
+    # Only animate if there's a noticeable fall and it's not the initial setup
+    if fall_distance < WorldData.DEPTH_PER_TILE * 0.5 or _last_rendered_depth == -1.0:
         render_mining_view()
         _last_rendered_depth = new_depth
+        return
+
+    # Render the world at the new depth first, so there's a hole to fall into
+    render_mining_view()
+    _last_rendered_depth = new_depth
+
+    # Calculate fall distance in pixels
+    var fall_pixels = fall_distance / WorldData.DEPTH_PER_TILE * tile_size
+
+    # Create a tween for the animation
+    var tween = create_tween()
+
+    # Move the character sprite up instantly so it can fall
+    character.position.y -= fall_pixels
+
+    # Animate the character falling back to its centered position
+    tween.tween_property(character, "position:y", character.position.y + fall_pixels, 0.4).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BOUNCE)
 
 func _on_tile_mined(tile_pos: Vector2i, _resources: Array[String]) -> void:
     _update_single_tile(tile_pos)

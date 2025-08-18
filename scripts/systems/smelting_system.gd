@@ -1,8 +1,6 @@
 class_name SmeltingSystem
 extends Node
 
-signal smelt_complete(bar_type: String, amount: int)
-
 const SMELT_RECIPES := {
     "Copper": { "cost": { "Copper": 10 }, "output": "Copper Bar", "time": 5.0 },
     "Iron": { "cost": { "Iron": 10 }, "output": "Iron Bar", "time": 8.0 }
@@ -27,7 +25,7 @@ func start_smelting(ore_type: String):
     timer.one_shot = true
     timer.timeout.connect(func():
         GM.inventory_system.add_to_storage(recipe["output"], 1)
-        smelt_complete.emit(recipe["output"], 1)
+        Event.smelt_complete.emit(recipe["output"], 1)
         timer.queue_free()
     )
     add_child(timer)

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cyapcu0jblhl4"]
 
-[ext_resource type="Script" uid="uid://bn40qx21lom81" path="res://scripts/views/ResourceDisplay.gd" id="1_h8ifd"]
+[ext_resource type="Script" uid="uid://bn40qx21lom81" path="res://scripts/views/resource_display.gd" id="1_h8ifd"]
 
 [node name="ResourceDisplayPanel" type="RichTextLabel"]
 size_flags_horizontal = 3

@@ -16,7 +16,8 @@ config/features=PackedStringArray("4.4", "GL Compatibility")
 
 [autoload]
 
-GM="*res://scripts/singletons/GameManager.gd"
+GM="*res://scripts/singletons/game_manager.gd"
+Event="*res://scripts/singletons/signal_bus.gd"
 
 [display]
 

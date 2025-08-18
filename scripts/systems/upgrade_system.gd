@@ -1,10 +1,6 @@
 class_name UpgradeSystem
 extends Node
 
-signal upgrade_purchased(upgrade_type: String, new_level: int)
-signal upgrade_failed(upgrade_type: String, reason: String)
-signal all_resources_sold(total_value: int)
-
 var game_state: GameState
 var inventory_system: InventorySystem
 var mining_tool: MiningTool
@@ -22,7 +18,7 @@ func can_upgrade_pickaxe() -> bool:
 
 func upgrade_pickaxe() -> bool:
     if not can_upgrade_pickaxe():
-        upgrade_failed.emit("pickaxe", "Insufficient materials")
+        Event.upgrade_failed.emit("pickaxe", "Insufficient materials")
         return false
     
     var cost = mining_tool.get_upgrade_cost()
@@ -32,7 +28,7 @@ func upgrade_pickaxe() -> bool:
     mining_tool.power = mining_tool.get_next_power()
     mining_tool.level += 1
     
-    upgrade_purchased.emit("pickaxe", mining_tool.level)
+    Event.upgrade_purchased.emit("pickaxe", mining_tool.level)
     return true
 
 # This function is now disabled until the Trader NPC is implemented.

@@ -13,7 +13,7 @@ func _ready():
     GM.inventory_system.storage_changed.connect(_on_storage_changed)
     
     # We also need to know when the player's state changes to switch modes.
-    GM.game_state.state_changed.connect(_on_player_state_changed)
+    Event.state_changed.connect(_on_player_state_changed)
     
     # Initial setup
     _on_player_state_changed(GM.game_state.current_state)

@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://7fq0w3id0uk4"]
 
-[ext_resource type="Script" uid="uid://yfw24j847bah" path="res://scripts/views/MiningView.gd" id="1_rvslj"]
+[ext_resource type="Script" uid="uid://yfw24j847bah" path="res://scripts/views/mining_view.gd" id="1_rvslj"]
 [ext_resource type="TileSet" uid="uid://bwkesjownidm3" path="res://assets/tiles/world_tileset.tres" id="2_rarhs"]
-[ext_resource type="Script" uid="uid://cecgx64wcwgqn" path="res://scripts/ui/UIManager.gd" id="5_nxtc6"]
+[ext_resource type="Script" uid="uid://cecgx64wcwgqn" path="res://scripts/ui/ui_manager.gd" id="5_nxtc6"]
 [ext_resource type="PackedScene" uid="uid://b1fnlnr2m7krs" path="res://scenes/ui/MiningHUD.tscn" id="6_jlsqs"]
 [ext_resource type="PackedScene" uid="uid://baye2h43jfsal" path="res://scenes/ui/SurfaceHUD.tscn" id="7_q8u5g"]
 
@@ -43,7 +43,7 @@ stretch = true
 [node name="SubViewport" type="SubViewport" parent="MainContent/MiningView/SubViewportContainer"]
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
-size = Vector2i(400, 648)
+size = Vector2i(2, 2)
 render_target_update_mode = 4
 
 [node name="Character" type="Sprite2D" parent="MainContent/MiningView/SubViewportContainer/SubViewport"]

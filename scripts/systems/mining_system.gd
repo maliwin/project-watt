@@ -1,9 +1,6 @@
 class_name MiningSystem
 extends Node
 
-signal tile_mined_successfully(tile_pos: Vector2i, resources: Array[String])
-signal mining_failed(tile_pos: Vector2i, reason: String)
-signal auto_mining_progressed(new_depth: float)
 
 @export var auto_mine_column: int = 12
 
@@ -16,10 +13,6 @@ var world_data: WorldData
 var _auto_mine_timer: Timer
 var _auto_mine_accumulator: float = 0.0
 const AUTO_MINE_TICK_INTERVAL: float = 0.1
-
-# --- NEW ---
-# This flag will act as a safety check.
-var is_initialized := false
 
 func _ready() -> void:
     # Set up the timer here, but DO NOT start it.
@@ -36,11 +29,7 @@ func initialize(p_game_state: GameState, p_inventory: InventorySystem, p_tool: M
     tile_tracker = p_tracker
     world_data = p_world_data
     
-    # --- NEW ---
-    # Now that all dependencies are confirmed to exist, we can safely start the timer
-    # and flip the flag to true.
     _auto_mine_timer.start()
-    is_initialized = true
 
 func can_mine_tile(tile_pos: Vector2i) -> bool:
     if tile_tracker.is_tile_mined(tile_pos):
@@ -54,7 +43,7 @@ func can_mine_tile(tile_pos: Vector2i) -> bool:
 
 func mine_tile(tile_pos: Vector2i, is_auto_mining: bool = false) -> bool:
     if not can_mine_tile(tile_pos):
-        mining_failed.emit(tile_pos, "Cannot mine this tile")
+        Event.mining_failed.emit(tile_pos, "Cannot mine this tile")
         return false
     
     tile_tracker.mine_tile(tile_pos)
@@ -63,13 +52,13 @@ func mine_tile(tile_pos: Vector2i, is_auto_mining: bool = false) -> bool:
         if is_auto_mining:
             game_state.max_mined_row = tile_pos.y
             game_state.depth += world_data.DEPTH_PER_TILE
-            auto_mining_progressed.emit(game_state.depth)
+            Event.auto_mining_progressed.emit(game_state.depth)
     
     var resources := _get_tile_resources(tile_pos)
     for resource in resources:
         inventory_system.add_to_pouch(resource)
     
-    tile_mined_successfully.emit(tile_pos, resources)
+    Event.tile_mined_successfully.emit(tile_pos, resources)
     
     if randf() < 0.01:
         tile_tracker.clear_distant_chunks(tile_pos)
@@ -80,12 +69,6 @@ func player_mine_tile(tile_pos: Vector2i) -> bool:
     return mine_tile(tile_pos, false)
 
 func _on_auto_mine_tick() -> void:
-    # --- NEW ---
-    # This guard clause is the most important change. It prevents this function
-    # from running until initialize() has completed.
-    if not is_initialized:
-        return
-
     var mining_speed := game_state.mining_speed
     
     _auto_mine_accumulator += mining_speed * AUTO_MINE_TICK_INTERVAL
@@ -101,7 +84,7 @@ func _auto_mine_next_tile() -> void:
     while tile_tracker.is_tile_mined(target):
         game_state.max_mined_row = target.y
         game_state.depth += world_data.DEPTH_PER_TILE
-        auto_mining_progressed.emit(game_state.depth)
+        Event.auto_mining_progressed.emit(game_state.depth)
         target.y += 1
     
     mine_tile(target, true)
