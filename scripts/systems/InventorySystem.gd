@@ -1,66 +1,59 @@
 class_name InventorySystem
 extends Node
 
-signal inventory_changed(inventory: Dictionary)
-signal resource_added(resource_name: String, amount: int)
-signal resource_removed(resource_name: String, amount: int)
+signal pouch_changed(inventory: Dictionary)
+signal storage_changed(inventory: Dictionary)
 
 const SELL_PRICES := {
     "Dirt": 1, "Stone": 2, "Deep Stone": 3, "Bedrock": 0, "Lava Rock": 4,
     "Copper": 5, "Iron": 8, "Silver": 12, "Gold": 20, "Obsidian": 25,
+    "Copper Bar": 15, "Iron Bar": 24
 }
 
-var _inventory: Dictionary = {}
+var _pouch: Dictionary = {}
+var _storage: Dictionary = {}
 
-var inventory: Dictionary:
-    get: return _inventory.duplicate()
+# --- POUCH FUNCTIONS ---
+func add_to_pouch(resource_name: String, amount: int = 1):
+    _pouch[resource_name] = _pouch.get(resource_name, 0) + amount
+    pouch_changed.emit(_pouch.duplicate())
 
-func add_resource(resource_name: String, amount: int = 1) -> void:
-    if amount <= 0:
-        return
-    
-    _inventory[resource_name] = _inventory.get(resource_name, 0) + amount
-    resource_added.emit(resource_name, amount)
-    inventory_changed.emit(inventory)
+func get_pouch_contents() -> Dictionary:
+    return _pouch.duplicate()
 
-func remove_resource(resource_name: String, amount: int = 1) -> bool:
-    var current_amount: int = _inventory.get(resource_name, 0)
-    if current_amount < amount:
+# --- STORAGE FUNCTIONS ---
+func add_to_storage(resource_name: String, amount: int = 1):
+    _storage[resource_name] = _storage.get(resource_name, 0) + amount
+    storage_changed.emit(_storage.duplicate())
+
+func remove_from_storage(resource_name: String, amount: int = 1) -> bool:
+    if _storage.get(resource_name, 0) < amount:
         return false
-    
-    _inventory[resource_name] = current_amount - amount
-    if _inventory[resource_name] == 0:
-        _inventory.erase(resource_name)
-    
-    resource_removed.emit(resource_name, amount)
-    inventory_changed.emit(inventory)
+    _storage[resource_name] -= amount
+    if _storage[resource_name] == 0:
+        _storage.erase(resource_name)
+    storage_changed.emit(_storage.duplicate())
     return true
 
-func has_resource(resource_name: String, amount: int = 1) -> bool:
-    return _inventory.get(resource_name, 0) >= amount
+func get_storage_contents() -> Dictionary:
+    return _storage.duplicate()
 
-func get_resource_count(resource_name: String) -> int:
-    return _inventory.get(resource_name, 0)
+func has_in_storage(requirements: Dictionary) -> bool:
+    for item in requirements:
+        if _storage.get(item, 0) < requirements[item]:
+            return false
+    return true
 
-func get_sellable_resources() -> Dictionary:
-    var sellable := {}
-    for resource in _inventory:
-        if SELL_PRICES.has(resource) and SELL_PRICES[resource] > 0:
-            sellable[resource] = _inventory[resource]
-    return sellable
 
-func get_sell_price(resource_name: String) -> int:
-    return SELL_PRICES.get(resource_name, 0)
+# --- NEW UTILITY FUNCTIONS ---
+func move_pouch_to_storage():
+    for item in _pouch:
+        add_to_storage(item, _pouch[item])
+    _pouch.clear()
+    pouch_changed.emit(_pouch.duplicate())
 
-func get_total_sell_value() -> int:
-    var total := 0
-    for resource in get_sellable_resources():
-        total += get_sellable_resources()[resource] * get_sell_price(resource)
-    return total
-
-func clear() -> void:
-    _inventory.clear()
-    inventory_changed.emit(inventory)
-
-func reset() -> void:
-    clear()
+func reset():
+    _pouch.clear()
+    _storage.clear()
+    pouch_changed.emit(_pouch.duplicate())
+    storage_changed.emit(_storage.duplicate())

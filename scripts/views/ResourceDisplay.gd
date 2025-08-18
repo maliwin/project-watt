@@ -1,66 +1,68 @@
 extends RichTextLabel
 
-@onready var GM = get_node("/root/GM") # <-- Add this line
+# This component will now display different inventories based on the game state.
+# We'll use a variable to track which inventory we should be showing.
+enum DisplayMode { POUCH, STORAGE }
+var current_mode: DisplayMode = DisplayMode.POUCH # Default to showing the pouch
 
 var _cached_inventory: Dictionary = {}
-var _cached_currency: int = 0
-var _cached_tool_level: int = 0
 
-func _ready() -> void:
-    _connect_game_signals()
-
-func _connect_game_signals() -> void:
-    GM.game_state.currency_changed.connect(_on_currency_changed)
-    GM.inventory_system.inventory_changed.connect(_on_inventory_changed)
-    GM.mining_tool.tool_upgraded.connect(_on_tool_upgraded)
-
-func _refresh_display() -> void:
-    var lines: Array[String] = []
+func _ready():
+    # Connect to the new inventory signals.
+    GM.inventory_system.pouch_changed.connect(_on_pouch_changed)
+    GM.inventory_system.storage_changed.connect(_on_storage_changed)
     
-    if _cached_inventory.is_empty():
-        lines.append("No resources yet.")
-    else:
-        var sorted_keys: Array = _cached_inventory.keys()
-        sorted_keys.sort()
+    # We also need to know when the player's state changes to switch modes.
+    GM.game_state.state_changed.connect(_on_player_state_changed)
+    
+    # Initial setup
+    _on_player_state_changed(GM.game_state.current_state)
+
+func _on_pouch_changed(new_pouch: Dictionary):
+    # Only update if we are currently supposed to be showing the pouch.
+    if current_mode == DisplayMode.POUCH:
+        _update_display("Mining Pouch", new_pouch)
+
+func _on_storage_changed(new_storage: Dictionary):
+    # Only update if we are currently supposed to be showing the storage.
+    if current_mode == DisplayMode.STORAGE:
+        _update_display("Surface Storage", new_storage)
+
+func _on_player_state_changed(new_state: GameState.PlayerState):
+    if new_state == GameState.PlayerState.MINING:
+        current_mode = DisplayMode.POUCH
+        # When we switch to mining, immediately update with the latest pouch contents.
+        _update_display("Mining Pouch", GM.inventory_system.get_pouch_contents())
+    else: # ON_SURFACE
+        current_mode = DisplayMode.STORAGE
+        # When we switch to the surface, update with the latest storage contents.
+        _update_display("Surface Storage", GM.inventory_system.get_storage_contents())
+
+# A generalized function to render any given inventory.
+func _update_display(title: String, inventory: Dictionary):
+    # Avoid unnecessary updates if the inventory hasn't changed.
+    if _cached_inventory.hash() == inventory.hash():
+        return
+    _cached_inventory = inventory.duplicate()
+    
+    clear() # Clears the RichTextLabel
+    
+    # Use BBCode for simple formatting
+    push_bold()
+    append_text(title)
+    pop()
+    
+    newline()
+    
+    if inventory.is_empty():
+        append_text("No resources yet.")
+        return
         
-        for resource_name in sorted_keys:
-            var amount: int = _cached_inventory[resource_name]
-            if amount > 0:
-                var sell_price = GM.inventory_system.get_sell_price(resource_name)
-                if sell_price > 0:
-                    lines.append("%s: %d ($%d each)" % [resource_name, amount, sell_price])
-                else:
-                    lines.append("%s: %d" % [resource_name, amount])
-    
-    lines.append("")
-    lines.append("💰 Currency: $%d" % _cached_currency)
-    
-    lines.append("")
-    var upgrade_cost: int = GM.mining_tool.get_upgrade_cost()
-    lines.append("⛏️ Pickaxe Level %d (Power %d)" % [GM.mining_tool.level, GM.mining_tool.power])
-    lines.append("   Next upgrade: $%d" % upgrade_cost)
-    
-    lines.append("")
-    lines.append("⚡ Mining Speed: %.1f tiles/sec" % GM.game_state.mining_speed)
-    
-    var total_value = GM.inventory_system.get_total_sell_value()
-    if total_value > 0:
-        lines.append("📦 Total inventory value: $%d" % total_value)
-    
-    text = "\n".join(lines)
-
-
-func _on_currency_changed(new_currency: int) -> void:
-    if _cached_currency != new_currency:
-        _cached_currency = new_currency
-        _refresh_display()
-
-func _on_inventory_changed(new_inventory: Dictionary) -> void:
-    if _cached_inventory.hash() != new_inventory.hash():
-        _cached_inventory = new_inventory.duplicate()
-        _refresh_display()
-
-func _on_tool_upgraded(tool: MiningTool) -> void:
-    if _cached_tool_level != tool.level:
-        _cached_tool_level = tool.level
-        _refresh_display()
+    var sorted_keys: Array = inventory.keys()
+    sorted_keys.sort()
+        
+    for resource_name in sorted_keys:
+        var amount: int = inventory[resource_name]
+        if amount > 0:
+            # We no longer need to show sell prices here.
+            append_text("\n- %s: %d" % [resource_name, amount])

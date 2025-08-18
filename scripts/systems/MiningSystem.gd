@@ -67,7 +67,7 @@ func mine_tile(tile_pos: Vector2i, is_auto_mining: bool = false) -> bool:
     
     var resources := _get_tile_resources(tile_pos)
     for resource in resources:
-        inventory_system.add_resource(resource)
+        inventory_system.add_to_pouch(resource)
     
     tile_mined_successfully.emit(tile_pos, resources)
     

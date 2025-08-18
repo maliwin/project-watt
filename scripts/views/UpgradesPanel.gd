@@ -25,6 +25,7 @@ func _build_buttons() -> void:
     self.add_child(upg_btn)
 
 func _on_sell_all_pressed() -> void:
+    print("sell all")
     GM.sell_all()
 
 func _on_upgrade_pickaxe_pressed() -> void:
@@ -35,11 +36,11 @@ func _update_button_states(_IGNORED_ARG = null) -> void:  # TODO: refactor arg
     if upg_btn == null:
         return
     
-    var cost: int = GM.mining_tool.get_upgrade_cost()
-    var can_afford: bool = GM.game_state.currency >= cost
+    # var cost: int = GM.mining_tool.get_upgrade_cost()
+    # var can_afford: bool = GM.game_state.currency >= cost
     
-    upg_btn.text = "Upgrade Pickaxe ($%d)" % cost
-    upg_btn.disabled = not can_afford
+    upg_btn.text = "Upgrade Pickaxe ($0)"
+    upg_btn.disabled = true
     upg_btn.tooltip_text = "Increase pickaxe power from %d to %d" % [
         GM.mining_tool.power,
         GM.mining_tool.power + 1

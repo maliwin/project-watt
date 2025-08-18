@@ -15,48 +15,26 @@ func initialize(p_game_state: GameState, p_inventory: InventorySystem, p_tool: M
     mining_tool = p_tool
 
 func can_upgrade_pickaxe() -> bool:
-    if not mining_tool or not game_state:
-        return false
-    return game_state.currency >= mining_tool.get_upgrade_cost()
+    var cost = mining_tool.get_upgrade_cost()
+    if cost.is_empty():
+        return false # Max level
+    return inventory_system.has_in_storage(cost)
 
 func upgrade_pickaxe() -> bool:
     if not can_upgrade_pickaxe():
-        upgrade_failed.emit("pickaxe", "Insufficient currency")
+        upgrade_failed.emit("pickaxe", "Insufficient materials")
         return false
     
-    var cost := mining_tool.get_upgrade_cost()
-    game_state.currency -= cost
+    var cost = mining_tool.get_upgrade_cost()
+    for item in cost:
+        inventory_system.remove_from_storage(item, cost[item])
+
+    mining_tool.power = mining_tool.get_next_power()
     mining_tool.level += 1
     
     upgrade_purchased.emit("pickaxe", mining_tool.level)
     return true
 
+# This function is now disabled until the Trader NPC is implemented.
 func sell_all_resources() -> void:
-    var sellable := inventory_system.get_sellable_resources()
-    var total_value := 0
-    
-    for resource_name in sellable:
-        var amount = sellable[resource_name]
-        var price := inventory_system.get_sell_price(resource_name)
-        var value = amount * price
-        
-        if inventory_system.remove_resource(resource_name, amount):
-            total_value += value
-    
-    if total_value > 0:
-        game_state.currency += total_value
-        all_resources_sold.emit(total_value)
-
-func sell_resource(resource_name: String, amount: int = 1) -> bool:
-    if not inventory_system.has_resource(resource_name, amount):
-        return false
-    
-    var price := inventory_system.get_sell_price(resource_name)
-    if price <= 0:
-        return false
-    
-    if inventory_system.remove_resource(resource_name, amount):
-        game_state.currency += price * amount
-        return true
-    
-    return false
+    print("No one to sell to yet!")

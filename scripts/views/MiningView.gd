@@ -26,7 +26,7 @@ func _ready() -> void:
 
     var tile_set := TileSet.new()
     var atlas_source := TileSetAtlasSource.new()
-    atlas_source.texture = load("res://assets/tiles/maja_tileset.png")
+    atlas_source.texture = load("res://assets/tiles/maja_tileset2.png")
     atlas_source.texture_region_size = Vector2i(tile_size, tile_size)
     
     for x in range(6):
@@ -63,7 +63,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _connect_game_signals() -> void:
     GM.game_state.depth_changed.connect(_on_depth_changed)
     GM.game_state.currency_changed.connect(_on_game_state_changed)
-    GM.inventory_system.inventory_changed.connect(_on_game_state_changed)
+    # GM.inventory_system.inventory_changed.connect(_on_game_state_changed)
     GM.mining_system.tile_mined_successfully.connect(_on_tile_mined)
     GM.mining_system.auto_mining_progressed.connect(_on_depth_changed)
     GM.mining_tool.tool_upgraded.connect(_on_tool_upgraded)
