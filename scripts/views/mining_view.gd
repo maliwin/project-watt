@@ -43,30 +43,12 @@ func _ready() -> void:
     _apply_zoom()
     render_mining_view()
 
-func _gui_input(event: InputEvent) -> void:
-    if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-        var world_pos = camera.get_canvas_transform().affine_inverse() * get_global_mouse_position()
-        var grid_pos = rock_layer.local_to_map(world_pos)
-        
-        if grid_pos.x >= 0 and grid_pos.x < grid_width and grid_pos.y >= 0 and grid_pos.y < grid_height:
-            _handle_tile_click(grid_pos.x, grid_pos.y)
-
-func _unhandled_input(event: InputEvent) -> void:
-    if event is InputEventMouseButton and event.pressed:
-        if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-            is_zoomed_in = true
-            _apply_zoom()
-        elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-            is_zoomed_in = false
-            _apply_zoom()
 
 func _connect_game_signals() -> void:
     Event.depth_changed.connect(_on_depth_changed)
     Event.currency_changed.connect(_on_game_state_changed)
-    # GM.inventory_system.pouch_changed.connect(_on_game_state_changed)
     Event.tile_mined_successfully.connect(_on_tile_mined)
     Event.auto_mining_progressed.connect(_on_depth_changed)
-    # GM.mining_tool.tool_upgraded.connect(_on_tool_upgraded)
 
 func setup_character() -> void:
     # This function is now only responsible for the character's appearance, not its position.

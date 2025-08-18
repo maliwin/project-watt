@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://7fq0w3id0uk4"]
+[gd_scene load_steps=7 format=3 uid="uid://7fq0w3id0uk4"]
 
 [ext_resource type="Script" uid="uid://yfw24j847bah" path="res://scripts/views/mining_view.gd" id="1_rvslj"]
 [ext_resource type="TileSet" uid="uid://bwkesjownidm3" path="res://assets/tiles/world_tileset.tres" id="2_rarhs"]
 [ext_resource type="Script" uid="uid://cecgx64wcwgqn" path="res://scripts/ui/ui_manager.gd" id="5_nxtc6"]
+[ext_resource type="Script" uid="uid://bkicl0mjgegmp" path="res://scripts/tools/player_input.gd" id="6_c01mt"]
 [ext_resource type="PackedScene" uid="uid://b1fnlnr2m7krs" path="res://scenes/ui/MiningHUD.tscn" id="6_jlsqs"]
 [ext_resource type="PackedScene" uid="uid://baye2h43jfsal" path="res://scenes/ui/SurfaceHUD.tscn" id="7_q8u5g"]
 
@@ -28,22 +29,25 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 alignment = 2
 
 [node name="MiningView" type="HBoxContainer" parent="MainContent"]
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
+mouse_filter = 2
 script = ExtResource("1_rvslj")
 
 [node name="SubViewportContainer" type="SubViewportContainer" parent="MainContent/MiningView"]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 stretch = true
 
 [node name="SubViewport" type="SubViewport" parent="MainContent/MiningView/SubViewportContainer"]
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
-size = Vector2i(2, 2)
+size = Vector2i(400, 648)
 render_target_update_mode = 4
 
 [node name="Character" type="Sprite2D" parent="MainContent/MiningView/SubViewportContainer/SubViewport"]
@@ -86,3 +90,6 @@ layout_mode = 1
 layout_mode = 2
 offset_right = 40.0
 offset_bottom = 40.0
+
+[node name="PlayerInput" type="Node" parent="."]
+script = ExtResource("6_c01mt")
