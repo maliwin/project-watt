@@ -54,7 +54,7 @@ func _check_for_fall():
         
         Event.character_logical_position_changed.emit(_character_world_pos)
         
-        var target_pixel_pos = _character_world_pos * MiningView.TILE_SIZE
+        var target_pixel_pos = _character_world_pos * Constants.TILE_SIZE
         var fall_duration = sqrt(fall_distance_tiles * 0.1)
         Event.character_fall_animation_started.emit(target_pixel_pos, fall_duration)
         

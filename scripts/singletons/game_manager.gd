@@ -1,6 +1,8 @@
 extends Node
 
-@export var starting_planet: PlanetData
+# @export var starting_planet: PlanetData
+var starting_planet: PlanetData = load("res://resources/planets/00_aethel.tres")
+
 
 var mining_tool := MiningTool.new()
 

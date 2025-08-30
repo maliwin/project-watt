@@ -34,7 +34,6 @@ class_name PlanetData
 
 # TODO: needed here?
 func get_layer_for_depth(depth: float) -> Dictionary:
-    var current_layer = layers[0]
     for layer in layers:
         if depth >= layer.start_depth:
             return layer

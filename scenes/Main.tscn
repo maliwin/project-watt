@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://7fq0w3id0uk4"]
+[gd_scene load_steps=9 format=3 uid="uid://7fq0w3id0uk4"]
 
 [ext_resource type="Script" uid="uid://yfw24j847bah" path="res://scripts/views/mining_view.gd" id="1_rvslj"]
 [ext_resource type="Script" uid="uid://cecgx64wcwgqn" path="res://scripts/ui/ui_manager.gd" id="5_nxtc6"]
@@ -8,8 +8,6 @@
 [ext_resource type="Script" uid="uid://bnsmjt1lhv3xc" path="res://scripts/systems/world_manager.gd" id="7_nxtc6"]
 [ext_resource type="PackedScene" uid="uid://baye2h43jfsal" path="res://scenes/ui/SurfacePanel.tscn" id="7_q8u5g"]
 [ext_resource type="Script" uid="uid://cjkmjw21atmhg" path="res://scripts/systems/mining_system.gd" id="8_q8u5g"]
-[ext_resource type="Script" uid="uid://r1km50mauvn6" path="res://scripts/singletons/game_manager.gd" id="9_lhr70"]
-[ext_resource type="Resource" uid="uid://cegudseji52a6" path="res://resources/planets/00_aethel.tres" id="10_wp0k4"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -46,13 +44,15 @@ layout_mode = 2
 size_flags_vertical = 3
 alignment = 2
 
-[node name="MiningView" type="HBoxContainer" parent="VBoxContainer/MainContent"]
+[node name="MiningView" type="Control" parent="VBoxContainer/MainContent"]
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 script = ExtResource("1_rvslj")
 
 [node name="SubViewportContainer" type="SubViewportContainer" parent="VBoxContainer/MainContent/MiningView"]
 layout_mode = 2
+offset_right = 400.0
+offset_bottom = 550.0
 size_flags_horizontal = 3
 mouse_filter = 2
 stretch = true
@@ -128,7 +128,3 @@ script = ExtResource("7_jlsqs")
 
 [node name="MiningSystem" type="Node" parent="Systems"]
 script = ExtResource("8_q8u5g")
-
-[node name="GameManager" type="Node" parent="Systems"]
-script = ExtResource("9_lhr70")
-starting_planet = ExtResource("10_wp0k4")
