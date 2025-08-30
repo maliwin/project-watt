@@ -1,11 +1,15 @@
-[gd_scene load_steps=7 format=3 uid="uid://7fq0w3id0uk4"]
+[gd_scene load_steps=11 format=3 uid="uid://7fq0w3id0uk4"]
 
 [ext_resource type="Script" uid="uid://yfw24j847bah" path="res://scripts/views/mining_view.gd" id="1_rvslj"]
-[ext_resource type="TileSet" uid="uid://bwkesjownidm3" path="res://assets/tiles/world_tileset.tres" id="2_rarhs"]
 [ext_resource type="Script" uid="uid://cecgx64wcwgqn" path="res://scripts/ui/ui_manager.gd" id="5_nxtc6"]
 [ext_resource type="Script" uid="uid://bkicl0mjgegmp" path="res://scripts/tools/player_input.gd" id="6_c01mt"]
 [ext_resource type="PackedScene" uid="uid://b1fnlnr2m7krs" path="res://scenes/ui/MiningPanel.tscn" id="6_jlsqs"]
+[ext_resource type="Script" uid="uid://ba5xeo4a1dp6e" path="res://scripts/systems/player_system.gd" id="7_jlsqs"]
+[ext_resource type="Script" uid="uid://bnsmjt1lhv3xc" path="res://scripts/systems/world_manager.gd" id="7_nxtc6"]
 [ext_resource type="PackedScene" uid="uid://baye2h43jfsal" path="res://scenes/ui/SurfacePanel.tscn" id="7_q8u5g"]
+[ext_resource type="Script" uid="uid://cjkmjw21atmhg" path="res://scripts/systems/mining_system.gd" id="8_q8u5g"]
+[ext_resource type="Script" uid="uid://r1km50mauvn6" path="res://scripts/singletons/game_manager.gd" id="9_lhr70"]
+[ext_resource type="Resource" uid="uid://cegudseji52a6" path="res://resources/planets/00_aethel.tres" id="10_wp0k4"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -18,69 +22,63 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="TopBar" type="PanelContainer" parent="."]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 40.0
-grow_horizontal = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="TopBar"]
-layout_mode = 2
-alignment = 2
-
-[node name="Button" type="Button" parent="TopBar/HBoxContainer"]
-layout_mode = 2
-text = "Menu"
-
-[node name="MainContent" type="HBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 40.0
-offset_bottom = -40.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="TopBar" type="PanelContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/TopBar"]
+layout_mode = 2
 alignment = 2
 
-[node name="MiningView" type="HBoxContainer" parent="MainContent"]
+[node name="Button" type="Button" parent="VBoxContainer/TopBar/HBoxContainer"]
+layout_mode = 2
+text = "Menu"
+
+[node name="MainContent" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 2
+
+[node name="MiningView" type="HBoxContainer" parent="VBoxContainer/MainContent"]
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 script = ExtResource("1_rvslj")
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="MainContent/MiningView"]
+[node name="SubViewportContainer" type="SubViewportContainer" parent="VBoxContainer/MainContent/MiningView"]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 stretch = true
 
-[node name="SubViewport" type="SubViewport" parent="MainContent/MiningView/SubViewportContainer"]
+[node name="SubViewport" type="SubViewport" parent="VBoxContainer/MainContent/MiningView/SubViewportContainer"]
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
-size = Vector2i(400, 568)
+size = Vector2i(400, 550)
 render_target_update_mode = 4
 
-[node name="Character" type="Sprite2D" parent="MainContent/MiningView/SubViewportContainer/SubViewport"]
+[node name="Character" type="Sprite2D" parent="VBoxContainer/MainContent/MiningView/SubViewportContainer/SubViewport"]
 z_index = 99
 
-[node name="RockLayer" type="TileMapLayer" parent="MainContent/MiningView/SubViewportContainer/SubViewport"]
-use_parent_material = true
-tile_set = ExtResource("2_rarhs")
+[node name="Camera2D" type="Camera2D" parent="VBoxContainer/MainContent/MiningView/SubViewportContainer/SubViewport"]
 
-[node name="OreLayer" type="TileMapLayer" parent="MainContent/MiningView/SubViewportContainer/SubViewport"]
-z_index = 1
-use_parent_material = true
-tile_set = ExtResource("2_rarhs")
+[node name="RangeIndicatorLayer" type="TileMapLayer" parent="VBoxContainer/MainContent/MiningView/SubViewportContainer/SubViewport"]
+z_index = 50
 
-[node name="Camera2D" type="Camera2D" parent="MainContent/MiningView/SubViewportContainer/SubViewport"]
+[node name="ChunkContainer" type="Node2D" parent="VBoxContainer/MainContent/MiningView/SubViewportContainer/SubViewport"]
 
-[node name="UILayer" type="Control" parent="MainContent"]
+[node name="UILayer" type="Control" parent="VBoxContainer/MainContent"]
 custom_minimum_size = Vector2(350, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="UIManager" type="Control" parent="MainContent/UILayer"]
+[node name="UIManager" type="Control" parent="VBoxContainer/MainContent/UILayer"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -91,37 +89,46 @@ size_flags_horizontal = 4
 size_flags_vertical = 3
 script = ExtResource("5_nxtc6")
 
-[node name="MiningPanel" parent="MainContent/UILayer/UIManager" instance=ExtResource("6_jlsqs")]
+[node name="MiningPanel" parent="VBoxContainer/MainContent/UILayer/UIManager" instance=ExtResource("6_jlsqs")]
 layout_mode = 1
 
-[node name="SurfacePanel" parent="MainContent/UILayer/UIManager" instance=ExtResource("7_q8u5g")]
+[node name="SurfacePanel" parent="VBoxContainer/MainContent/UILayer/UIManager" instance=ExtResource("7_q8u5g")]
+visible = false
 layout_mode = 1
 
-[node name="BottomBar" type="PanelContainer" parent="."]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -40.0
-grow_horizontal = 2
-grow_vertical = 0
+[node name="BottomBar" type="PanelContainer" parent="VBoxContainer"]
+layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="BottomBar"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/BottomBar"]
 layout_mode = 2
 alignment = 1
 
-[node name="Button" type="Button" parent="BottomBar/HBoxContainer"]
+[node name="Button" type="Button" parent="VBoxContainer/BottomBar/HBoxContainer"]
 layout_mode = 2
 text = "Inventory"
 
-[node name="Button2" type="Button" parent="BottomBar/HBoxContainer"]
+[node name="Button2" type="Button" parent="VBoxContainer/BottomBar/HBoxContainer"]
 layout_mode = 2
 text = "Quests"
 
-[node name="Button3" type="Button" parent="BottomBar/HBoxContainer"]
+[node name="Button3" type="Button" parent="VBoxContainer/BottomBar/HBoxContainer"]
 layout_mode = 2
 text = "Shop"
 
 [node name="PlayerInput" type="Node" parent="."]
 script = ExtResource("6_c01mt")
+
+[node name="Systems" type="Node" parent="."]
+
+[node name="WorldManager" type="Node" parent="Systems"]
+script = ExtResource("7_nxtc6")
+
+[node name="PlayerSystem" type="Node" parent="Systems"]
+script = ExtResource("7_jlsqs")
+
+[node name="MiningSystem" type="Node" parent="Systems"]
+script = ExtResource("8_q8u5g")
+
+[node name="GameManager" type="Node" parent="Systems"]
+script = ExtResource("9_lhr70")
+starting_planet = ExtResource("10_wp0k4")

@@ -8,7 +8,7 @@ extends Resource
             level = value
             Event.tool_upgraded.emit(self)
 
-@export var power: int = 1
+@export var power: int = 10
 @export var crit_chance: float = 0.05
 
 const UPGRADE_COSTS = [

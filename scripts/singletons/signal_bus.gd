@@ -24,3 +24,7 @@ signal player_clicked_tile(grid_pos)
 
 signal zoom_level_changed(zoom_in)
 signal screen_clicked(screen_position)
+
+
+signal character_logical_position_changed(new_world_pos: Vector2i)
+signal character_fall_animation_started(target_pixel_pos: Vector2, duration: float)

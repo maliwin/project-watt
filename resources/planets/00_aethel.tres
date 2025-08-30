@@ -1,0 +1,61 @@
+[gd_resource type="Resource" script_class="PlanetData" load_steps=2 format=3 uid="uid://cegudseji52a6"]
+
+[ext_resource type="Script" uid="uid://coqy8wg8vtx0" path="res://scripts/data/planet_data.gd" id="1_muexe"]
+
+[resource]
+script = ExtResource("1_muexe")
+planet_name = "Aethel-7"
+master_seed = 12345
+layers = Array[Dictionary]([{
+"base_rock_id": "dirt",
+"name": "Dirt",
+"start_depth": 0
+}, {
+"base_rock_id": "stone",
+"name": "Stone",
+"start_depth": 100
+}, {
+"base_rock_id": "deep_stone",
+"name": "Deep Stone",
+"start_depth": 500
+}, {
+"base_rock_id": "bedrock",
+"name": "Bedrock",
+"start_depth": 1000
+}, {
+"base_rock_id": "lava_rock",
+"name": "Lava Rock",
+"start_depth": 2000
+}])
+ores = Array[Dictionary]([{
+"noise_frequency": 0.08,
+"noise_octaves": 2,
+"ore_id": "copper",
+"rarity": 0.6,
+"valid_layers": ["dirt", "stone"]
+}, {
+"noise_frequency": 0.06,
+"noise_octaves": 3,
+"ore_id": "iron",
+"rarity": 0.7,
+"valid_layers": ["stone", "deep_stone"]
+}, {
+"noise_frequency": 0.05,
+"noise_octaves": 2,
+"ore_id": "silver",
+"rarity": 0.85,
+"valid_layers": ["deep_stone"]
+}, {
+"noise_frequency": 0.09,
+"noise_octaves": 1,
+"ore_id": "gold",
+"rarity": 0.9,
+"valid_layers": ["deep_stone", "bedrock"]
+}, {
+"noise_frequency": 0.05,
+"noise_octaves": 3,
+"ore_id": "obsidian",
+"rarity": 0.8,
+"valid_layers": ["lava_rock"]
+}])
+metadata/_custom_type_script = "uid://coqy8wg8vtx0"

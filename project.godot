@@ -18,6 +18,7 @@ config/features=PackedStringArray("4.4", "GL Compatibility")
 
 GM="*res://scripts/singletons/game_manager.gd"
 Event="*res://scripts/singletons/signal_bus.gd"
+Ticker="*res://scripts/singletons/time_manager.gd"
 
 [display]
 

@@ -4,11 +4,11 @@ extends Node
 signal pouch_changed(inventory: Dictionary)
 signal storage_changed(inventory: Dictionary)
 
-const SELL_PRICES := {
-    "Dirt": 1, "Stone": 2, "Deep Stone": 3, "Bedrock": 0, "Lava Rock": 4,
-    "Copper": 5, "Iron": 8, "Silver": 12, "Gold": 20, "Obsidian": 25,
-    "Copper Bar": 15, "Iron Bar": 24
-}
+#const SELL_PRICES := {
+    #"Dirt": 1, "Stone": 2, "Deep Stone": 3, "Bedrock": 0, "Lava Rock": 4,
+    #"Copper": 5, "Iron": 8, "Silver": 12, "Gold": 20, "Obsidian": 25,
+    #"Copper Bar": 15, "Iron Bar": 24
+#}
 
 var _pouch: Dictionary = {}
 var _storage: Dictionary = {}
@@ -44,8 +44,6 @@ func has_in_storage(requirements: Dictionary) -> bool:
             return false
     return true
 
-
-# --- NEW UTILITY FUNCTIONS ---
 func move_pouch_to_storage():
     for item in _pouch:
         add_to_storage(item, _pouch[item])

@@ -1,86 +1,65 @@
 extends Node
 
-# Public components - other systems can access these
-@onready var game_state := GameState.new()
-@onready var mining_tool := MiningTool.new()
+@export var starting_planet: PlanetData
+
+var mining_tool := MiningTool.new()
+
+# --- System References ---
+# These are the major systems of the game. We get them from the scene tree.
+@onready var world_manager: WorldManager = $/root/Main/Systems/WorldManager
+@onready var player_system: PlayerSystem = $/root/Main/Systems/PlayerSystem
+@onready var mining_system: MiningSystem = $/root/Main/Systems/MiningSystem
+# Note: You would add @onready vars for your other systems (Inventory, Smelting, etc.) here as you create them.
 @onready var inventory_system := InventorySystem.new()
-@onready var tile_tracker := TileTracker.new()
-@onready var mining_system := MiningSystem.new()
 @onready var smelting_system := SmeltingSystem.new()
 @onready var upgrade_system := UpgradeSystem.new()
-@onready var world_data := WorldData.new()
 
+# --- State ---
 var saved_mine_state: Dictionary = {}
 
+
 func _ready() -> void:
-    add_child(inventory_system)
-    add_child(tile_tracker)
-    add_child(mining_system)
-    add_child(smelting_system)
-    add_child(upgrade_system)
+    # "Wire up" the systems by passing them the dependencies they need.
+    # This is a clean way to manage dependencies without tight coupling.
+    mining_system.initialize(inventory_system, world_manager)
+    # You would continue to initialize your other systems here.
     
-    mining_system.initialize(game_state, inventory_system, mining_tool, tile_tracker, world_data)
-    upgrade_system.initialize(game_state, inventory_system, mining_tool)
-    
+    # Start the game for the first time.
     start_new_mine()
 
+
 func return_to_surface():
-    mining_system.stop_autominer()
-    
-    # BUGFIX: Save the raw data, not the node reference.
     saved_mine_state = {
-        "tile_tracker_data": tile_tracker.get_state(),
-        "depth": game_state.depth,
-        "max_row": game_state.max_mined_row,
+        "mined_tiles": world_manager.mined_tiles.duplicate(),
+        "player_pos": player_system.get_character_world_pos(),
     }
     
     inventory_system.move_pouch_to_storage()
     
-    # Clear the active tracker while on the surface.
-    tile_tracker.reset()
-    
-    game_state.current_state = GameState.PlayerState.ON_SURFACE
+    player_system.stop_mining()
+
 
 func continue_mine():
-    if not saved_mine_state:
-        start_new_mine()
+    if saved_mine_state.is_empty():
+        start_new_mine()  # TODO: refactor
         return
 
-    # BUGFIX: Restore the mine data using set_state.
-    tile_tracker.set_state(saved_mine_state.get("tile_tracker_data"))
-    game_state.depth = saved_mine_state.get("depth")
-    game_state.max_mined_row = saved_mine_state.get("max_row")
+    world_manager.mined_tiles = saved_mine_state.get("mined_tiles")
+    
+    player_system.start_from_position(saved_mine_state.get("player_pos"))
     
     saved_mine_state.clear()
-    
-    game_state.current_state = GameState.PlayerState.MINING
-    mining_system.start_autominer()
+
 
 func start_new_mine():
+    if starting_planet == null:
+        push_error("GameManager: 'Starting Planet' resource is not set in the Inspector!")
+        return
+        
     saved_mine_state.clear()
     
-    tile_tracker.reset()
+    world_manager.initialize_mine(starting_planet)
     
-    game_state.reset()
+    inventory_system.reset()
     
-    mining_system.start_autominer()
-
-# --- Passthrough functions ---
-func can_mine_tile(tile_pos: Vector2i) -> bool:
-    return mining_system.can_mine_tile(tile_pos)
-
-func player_mine_tile(tile_pos: Vector2i) -> bool:
-    return mining_system.player_mine_tile(tile_pos)
-
-func is_tile_mined(world_x: int, world_y: int) -> bool:
-    return tile_tracker.is_tile_mined(Vector2i(world_x, world_y))
-
-func upgrade_pickaxe() -> bool:
-    return upgrade_system.upgrade_pickaxe()
-
-func get_depth_per_tile() -> float:
-    return WorldData.DEPTH_PER_TILE
-
-var auto_mine_x: int:
-    get: return mining_system.auto_mine_column
-    set(value): mining_system.auto_mine_column = value
+    # player_system.start_new_mine()
