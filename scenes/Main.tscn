@@ -1,5 +1,6 @@
-[gd_scene load_steps=9 format=3 uid="uid://7fq0w3id0uk4"]
+[gd_scene load_steps=10 format=3 uid="uid://7fq0w3id0uk4"]
 
+[ext_resource type="Script" uid="uid://lhg6ab6p2rwq" path="res://scripts/main.gd" id="1_q8u5g"]
 [ext_resource type="Script" uid="uid://yfw24j847bah" path="res://scripts/views/mining_view.gd" id="1_rvslj"]
 [ext_resource type="Script" uid="uid://cecgx64wcwgqn" path="res://scripts/ui/ui_manager.gd" id="5_nxtc6"]
 [ext_resource type="Script" uid="uid://bkicl0mjgegmp" path="res://scripts/tools/player_input.gd" id="6_c01mt"]
@@ -19,6 +20,7 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 2
+script = ExtResource("1_q8u5g")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1

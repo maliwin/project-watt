@@ -1,6 +1,11 @@
 # warning-disable unused_signal
 extends Node
 
+
+signal game_started(start_pos: Vector2i)
+signal game_tick(delta: float)
+
+
 signal tool_upgraded(tool: MiningTool)
 
 
@@ -11,6 +16,7 @@ signal state_changed(new_state)
 
 signal tile_mined_successfully(tile_pos: Vector2i, resources: Array[String])
 signal mining_failed(tile_pos: Vector2i, reason: String)
+signal mine_attempt_finished
 signal auto_mining_progressed(new_depth: float)
 
 

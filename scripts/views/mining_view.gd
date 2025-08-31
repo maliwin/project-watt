@@ -18,7 +18,7 @@ const SCANNER_RANGE_ZOOMED_OUT := 20
 @onready var world_manager: WorldManager = $/root/Main/Systems/WorldManager
 
 # --- State ---
-var _character_world_pos := Vector2i(0, 0) # A local copy for positioning calculations.
+var _character_world_pos := Vector2i(0, 0)
 var _is_zoomed_out := false
 var _current_scanner_range := SCANNER_RANGE_ZOOMED_IN
 
@@ -28,7 +28,7 @@ var _recycled_chunk_nodes: Array[TileMapLayer] = [] # Pool of inactive nodes to 
 
 
 func _ready() -> void:
-    # Event.game_started.connect(_on_game_started)
+    Event.game_started.connect(_on_game_started)
     
     # Connect to all the signals that will control this view.
     Event.character_logical_position_changed.connect(_on_character_logical_position_changed)
@@ -37,19 +37,15 @@ func _ready() -> void:
     Event.zoom_level_changed.connect(_on_zoom_level_changed)
 
 
-# --- Event Listeners (How the View is Controlled) ---
-
 func _on_game_started(start_pos: Vector2i):
-    # The game is ready. Create our visual assets and start the update loop.
     var tileset = _create_debug_tileset()
     _create_chunk_pool(tileset)
     
     _character_world_pos = start_pos
     character.position = _character_world_pos * Constants.TILE_SIZE
-    camera.position = character.position # Snap camera immediately on start
+    camera.position = character.position
     
-    # Now that we are initialized, we can safely start our per-frame logic.
-    Ticker.game_tick.connect(_on_game_tick)
+    Event.game_tick.connect(_on_game_tick)
 
 func _on_game_tick(_delta: float) -> void:
     _update_camera()
@@ -73,13 +69,10 @@ func _on_zoom_level_changed(p_is_zoomed_out: bool):
     else:
         _current_scanner_range = SCANNER_RANGE_ZOOMED_IN
         camera.zoom = Vector2(1.5, 1.5)
-    # NOTE: No need to unload chunks. _update_visible_chunks will handle it.
-
 
 # --- Visual Logic ---
 
 func _update_camera():
-    # Camera smoothly follows the character's visual (tweening) position.
     camera.position = camera.position.lerp(character.position, 0.1)
 
 func _clear_tile_visual(tile_pos: Vector2i):
@@ -87,25 +80,29 @@ func _clear_tile_visual(tile_pos: Vector2i):
     if _chunk_nodes.has(chunk_coord):
         var chunk_node: TileMapLayer = _chunk_nodes[chunk_coord]
         var tile_local_pos = tile_pos % CHUNK_SIZE
-        #chunk_node.set_cell(tile_local_pos, -1) # -1 clears the tile
         chunk_node.erase_cell(tile_local_pos)
 
 func _update_visible_chunks():
-    # Dynamically determine the view size based on the actual viewport.
     var view_size_in_tiles = get_viewport_rect().size / (Constants.TILE_SIZE * camera.zoom)
     
-    var character_chunk_pos = _character_world_pos / CHUNK_SIZE
     var view_width_in_chunks = ceil(view_size_in_tiles.x / CHUNK_SIZE) + 2 # +2 for buffer
     var view_height_in_chunks = ceil(view_size_in_tiles.y / CHUNK_SIZE) + 2
 
     var required_chunks: Dictionary = {}
-    # Calculate required chunks based on the camera's view, not the character's logical position.
     var camera_world_pos = camera.position / Constants.TILE_SIZE
-    var camera_chunk_pos = Vector2i(floor(camera_world_pos.x / CHUNK_SIZE), floor(camera_world_pos.y / CHUNK_SIZE))
+    var camera_chunk_pos = Vector2i(round(camera_world_pos.x / CHUNK_SIZE), round(camera_world_pos.y / CHUNK_SIZE))
 
-    for x in range(-view_width_in_chunks / 2, view_width_in_chunks / 2 + 1):
-        for y in range(-view_height_in_chunks / 2, view_height_in_chunks / 2 + 1):
-            var chunk_coord = camera_chunk_pos + Vector2i(x, y)
+    var half_view_width = view_width_in_chunks / 2.0
+    var start_x = camera_chunk_pos.x - floor(half_view_width)
+    var end_x = camera_chunk_pos.x + ceil(half_view_width)
+
+    var half_view_height = view_height_in_chunks / 2.0
+    var start_y = camera_chunk_pos.y - floor(half_view_height)
+    var end_y = camera_chunk_pos.y + ceil(half_view_height)
+
+    for y in range(start_y, end_y + 1):
+        for x in range(start_x, end_x + 1):
+            var chunk_coord = Vector2i(x, y)
             required_chunks[chunk_coord] = true
 
     # Unload chunks that are no longer needed.
@@ -148,12 +145,12 @@ func _draw_chunk(chunk_coord: Vector2i, chunk_data: Dictionary):
     var chunk_node = _chunk_nodes.get(chunk_coord)
     if not chunk_node: return
     
-    # The view's only job is to draw what it's told. No more redundant checks.
     for tile_local_pos in chunk_data:
         var tile = chunk_data[tile_local_pos]
         
-        # In a real implementation, you would look up the correct atlas coords
-        # for the "rock" and "ore" IDs from a central resource.
+        if world_manager.is_tile_mined(chunk_coord * CHUNK_SIZE + tile_local_pos):
+            continue # Skip this tile if it's already mined
+        
         var atlas_coords = Vector2i(0, 0) # Placeholder for "stone"
         if tile.ore == "copper": atlas_coords = Vector2i(1, 0) # Placeholder for "copper"
         

@@ -1,14 +1,12 @@
 extends Node
 
-signal game_tick(delta: float)
-
 var _next_event_id: int = 1
 
 # { event_id: { "fire_at_time": float, "target_path": NodePath, "method": StringName } }
 var _scheduled_events: Dictionary = {}
 var _current_time: float = 0.0  # time elapsed since game started, in seconds
 
-const GAME_HZ: float = 30.0  # NOTE: can make this non-const in the future
+const GAME_HZ: float = 480.0  # NOTE: can make this non-const in the future
 const GAME_TICK_RATE: float = 1.0 / GAME_HZ
 var _time_accumulator: float = 0.0
 
@@ -56,7 +54,7 @@ func _process(delta: float):
         _time_accumulator -= GAME_TICK_RATE
     
 func _tick(fixed_delta: float):
-    game_tick.emit(fixed_delta)
+    Event.game_tick.emit(fixed_delta)
     
     var events_to_fire = []
     for event_id in _scheduled_events:

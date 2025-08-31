@@ -118,8 +118,7 @@ func _thread_function():
             chunk_to_generate = pending_chunks.pop_front()
         mutex.unlock()
         
-        print(chunk_to_generate)
-        if chunk_to_generate:
+        if chunk_to_generate != null:
             var data = _generate_chunk_data(chunk_to_generate)
             mutex.lock()
             completed_chunks[chunk_to_generate] = data
