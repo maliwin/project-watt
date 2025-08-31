@@ -1,8 +1,6 @@
 extends Node
 class_name WorldManager
 
-const CHUNK_SIZE := 32  # TODO: is this ok?
-
 # type TileData = { "rock": String, "ore": String }
 # type ChunkData = Dictionary[Vector2i, TileData]
 
@@ -31,43 +29,41 @@ func destroy_tile(world_pos: Vector2i):
 
 func get_tile_data(world_pos: Vector2i) -> Dictionary:
     if not is_initialized:
+        # TODO: log to see if this happens
         push_warning("WorldManager: get_tile_data called before planet was initialized.")
         return {"rock": "air", "ore": ""}
     
-    var chunk_coord := world_pos / CHUNK_SIZE
-    var tile_local_pos := world_pos % CHUNK_SIZE
+    var chunk_coord := world_pos / Constants.CHUNK_SIZE
+    var tile_local_pos := world_pos % Constants.CHUNK_SIZE
     
-    # First, check if the chunk is already generated and ready.
     mutex.lock()
     var chunk_data = completed_chunks.get(chunk_coord, null)
     mutex.unlock()
     
-    # If the chunk wasn't ready, we must generate it now, on the main thread.
-    # This is a fallback to prevent the game from breaking if logic outpaces generation.
     if chunk_data == null:
+        # TODO: log to see if this happens and also if we should then store this??
         chunk_data = _generate_chunk_data(chunk_coord)
         
-    # Now that we have the chunk data, find the specific tile.
-    # The chunk_data dictionary only contains non-air tiles for optimization.
     if chunk_data.has(tile_local_pos):
-        # The key exists, so we can safely return its data.
         return chunk_data[tile_local_pos]
     else:
-        # If the key doesn't exist, it means the tile is air.
+        # TODO: log to see if this happens
         return {"rock": "air", "ore": ""}
-
 
 func initialize_mine(planet_data: PlanetData):
     mutex.lock()
     current_planet = planet_data
     noise_generators.clear()
 
-    for ore_def in current_planet.ores:
+    for ore_id in current_planet.ores:
+        var ore_def: Dictionary = current_planet.ores.get(ore_id)
         var noise := FastNoiseLite.new()
-        noise.seed = current_planet.master_seed + ore_def.ore_id.hash()
+        
+        noise.seed = current_planet.master_seed + ore_id.hash()
         noise.frequency = ore_def.noise_frequency
         noise.fractal_octaves = ore_def.noise_octaves
-        noise_generators[ore_def.ore_id] = noise
+        
+        noise_generators[ore_id] = noise
 
     is_initialized = true
     mutex.unlock()
@@ -125,34 +121,36 @@ func _thread_function():
             mutex.unlock()
             
 func _generate_chunk_data(chunk_coord: Vector2i) -> Dictionary:
+    # TODO: slowest part of code, see if ever needs improving
     var data := {}
-    var start_x = chunk_coord.x * CHUNK_SIZE
-    var start_y = chunk_coord.y * CHUNK_SIZE
+    var start_x = chunk_coord.x * Constants.CHUNK_SIZE
+    var start_y = chunk_coord.y * Constants.CHUNK_SIZE
     
-    for y_offset in range(CHUNK_SIZE):
+    for y_offset in range(Constants.CHUNK_SIZE):
         var depth = start_y + y_offset
         var layer_data = current_planet.get_layer_for_depth(depth)  # TODO: see if needs optimizing ever
         
-        for x_offset in range(CHUNK_SIZE):
+        for x_offset in range(Constants.CHUNK_SIZE):
             var world_pos = Vector2i(start_x + x_offset, start_y + y_offset)
             
             var rock_id: String
-            var ore_id: String = ""
+            var generated_ore_id: String
             
             if not layer_data:  # air, TODO: refactor
                 continue
             
             rock_id = layer_data.base_rock_id
             
-            for ore_def in current_planet.ores:
+            for ore_id in current_planet.ores:
+                var ore_def = current_planet.ores.get(ore_id)
                 if layer_data.base_rock_id in ore_def.valid_layers:
-                    var noise_val = noise_generators[ore_def.ore_id].get_noise_2d(world_pos.x, world_pos.y)
+                    var noise_val = noise_generators[ore_id].get_noise_2d(world_pos.x, world_pos.y)
                     var normalized_noise = (noise_val + 1.0) / 2.0
                     
                     if normalized_noise > ore_def.rarity:
-                        ore_id = ore_def.ore_id
+                        generated_ore_id = ore_id
                         break
         
-            data[Vector2i(x_offset, y_offset)] = {"rock": rock_id, "ore": ore_id}
+            data[Vector2i(x_offset, y_offset)] = {"rock": rock_id, "ore": generated_ore_id}
                 
     return data

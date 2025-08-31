@@ -23,18 +23,22 @@ class_name PlanetData
     "lava_rock": {"hardness": 20}
 }
 
+# TODO: do we change valid_layers to just be a depth range?
 @export_group("Ore Deposits")
-@export var ores: Array[Dictionary] = [
-    {"ore_id": "copper", "valid_layers": ["dirt", "stone"], "rarity": 0.6, "noise_frequency": 0.08, "noise_octaves": 2},
-    {"ore_id": "iron", "valid_layers": ["stone", "deep_stone"], "rarity": 0.7, "noise_frequency": 0.06, "noise_octaves": 3},
-    {"ore_id": "silver", "valid_layers": ["deep_stone"], "rarity": 0.85, "noise_frequency": 0.05, "noise_octaves": 2},
-    {"ore_id": "gold", "valid_layers": ["deep_stone", "bedrock"], "rarity": 0.9, "noise_frequency": 0.09, "noise_octaves": 1},
-    {"ore_id": "obsidian", "valid_layers": ["lava_rock"], "rarity": 0.8, "noise_frequency": 0.05, "noise_octaves": 3}
-]
+@export var ores: Dictionary = {
+    "copper": {"valid_layers": ["dirt", "stone"], "rarity": 0.6, "noise_frequency": 0.08, "noise_octaves": 2},
+    "iron": {"valid_layers": ["stone", "deep_stone"], "rarity": 0.7, "noise_frequency": 0.06, "noise_octaves": 3},
+    "silver": {"valid_layers": ["deep_stone"], "rarity": 0.85, "noise_frequency": 0.05, "noise_octaves": 2},
+    "gold": {"valid_layers": ["deep_stone", "bedrock"], "rarity": 0.9, "noise_frequency": 0.09, "noise_octaves": 1},
+    "obsidian": {"valid_layers": ["lava_rock"], "rarity": 0.8, "noise_frequency": 0.05, "noise_octaves": 3}
+}
+
+var ores_reversed = ores.duplicate()
 
 # TODO: needed here?
 func get_layer_for_depth(depth: float) -> Dictionary:
-    for layer in layers:
+    for i in range(layers.size() - 1, -1, -1):
+        var layer = layers[i]
         if depth >= layer.start_depth:
             return layer
     return {}
@@ -42,10 +46,5 @@ func get_layer_for_depth(depth: float) -> Dictionary:
 
 func get_total_hardness(tile_data: Dictionary) -> int:
     var base_hardness = rock_properties.get(tile_data.rock, {"hardness": 1}).hardness
-    var bonus_hardness = 0
-    if tile_data.ore != "":
-        for ore_def in ores:
-            if ore_def.ore_id == tile_data.ore:
-                bonus_hardness = ore_def.get("hardness_bonus", 0)
-                break
-    return base_hardness + bonus_hardness
+    # var bonus_hardness = 0
+    return base_hardness # + bonus_hardness

@@ -3,7 +3,7 @@ extends Node
 
 enum CharacterState { IDLE, MINING, FALLING }
 
-var _character_state := CharacterState.IDLE
+var _character_state := CharacterState.MINING
 var _character_world_pos := Vector2i(0, -1)  # TODO: refactor
 var _current_tool: MiningTool
 
@@ -18,17 +18,22 @@ func _ready():
 func _on_game_tick(delta: float):
     pass
 
+func get_character_world_pos() -> Vector2i:
+    return _character_world_pos
+
 # --- Auto-Mining Logic ---
 
 func _start_mining_next_block():
+    #if _character_state != CharacterState.MINING:
+        #push_warning("Can't start mining next block because not in correct state.")
+        #return
+        
     # var mining_speed = _current_tool.get_mining_speed()
-    var mining_speed = 0.00000001
-    _character_state = CharacterState.MINING
+    var mining_speed = 0.0001
     Ticker.schedule(mining_speed, self, "_mine_block_below")
 
 func _mine_block_below():
-    if _character_state != CharacterState.MINING:
-        return
+    var _character_state := CharacterState.MINING
     
     var target_pos = _character_world_pos + Vector2i(0, 1)
     

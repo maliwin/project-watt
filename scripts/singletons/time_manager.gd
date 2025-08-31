@@ -6,7 +6,7 @@ var _next_event_id: int = 1
 var _scheduled_events: Dictionary = {}
 var _current_time: float = 0.0  # time elapsed since game started, in seconds
 
-const GAME_HZ: float = 480.0  # NOTE: can make this non-const in the future
+const GAME_HZ: float = 60.0  # NOTE: can make this non-const in the future
 const GAME_TICK_RATE: float = 1.0 / GAME_HZ
 var _time_accumulator: float = 0.0
 
@@ -63,11 +63,7 @@ func _tick(fixed_delta: float):
             events_to_fire.append(event_id)
     
     for event_id in events_to_fire:
-        var event = _scheduled_events.get(event_id, null)
-        
-        if not event:
-            continue
-            
+        var event = _scheduled_events.get(event_id)  # TODO: does this ever error
         var target_node = get_node_or_null(event.target_path)
         if is_instance_valid(target_node) and target_node.has_method(event.method):
             target_node.call(event.method)
