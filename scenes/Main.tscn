@@ -1,14 +1,18 @@
-[gd_scene load_steps=10 format=3 uid="uid://7fq0w3id0uk4"]
+[gd_scene load_steps=14 format=3 uid="uid://7fq0w3id0uk4"]
 
 [ext_resource type="Script" uid="uid://lhg6ab6p2rwq" path="res://scripts/main.gd" id="1_q8u5g"]
 [ext_resource type="Script" uid="uid://yfw24j847bah" path="res://scripts/views/mining_view.gd" id="1_rvslj"]
 [ext_resource type="Script" uid="uid://cecgx64wcwgqn" path="res://scripts/ui/ui_manager.gd" id="5_nxtc6"]
 [ext_resource type="Script" uid="uid://bkicl0mjgegmp" path="res://scripts/tools/player_input.gd" id="6_c01mt"]
 [ext_resource type="PackedScene" uid="uid://b1fnlnr2m7krs" path="res://scenes/ui/MiningPanel.tscn" id="6_jlsqs"]
-[ext_resource type="Script" uid="uid://ba5xeo4a1dp6e" path="res://scripts/systems/player_system.gd" id="7_jlsqs"]
+[ext_resource type="Script" uid="uid://ba5xeo4a1dp6e" path="res://scripts/systems/player/player_system.gd" id="7_jlsqs"]
 [ext_resource type="Script" uid="uid://bnsmjt1lhv3xc" path="res://scripts/systems/world_manager.gd" id="7_nxtc6"]
 [ext_resource type="PackedScene" uid="uid://baye2h43jfsal" path="res://scenes/ui/SurfacePanel.tscn" id="7_q8u5g"]
 [ext_resource type="Script" uid="uid://cjkmjw21atmhg" path="res://scripts/systems/mining_system.gd" id="8_q8u5g"]
+[ext_resource type="Script" uid="uid://d4ca1uudc3xtc" path="res://scripts/fsm/state_machine.gd" id="9_qmy6f"]
+[ext_resource type="Script" uid="uid://bpolb02t2j7hs" path="res://scripts/systems/player/idle_state.gd" id="10_mwfav"]
+[ext_resource type="Script" uid="uid://bxucl7wvq4ief" path="res://scripts/systems/player/mining_state.gd" id="11_3p2gp"]
+[ext_resource type="Script" uid="uid://cqyhv5wlusdem" path="res://scripts/systems/player/falling_state.gd" id="12_cvmbd"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -19,7 +23,6 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-mouse_filter = 2
 script = ExtResource("1_q8u5g")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
@@ -75,6 +78,17 @@ z_index = 50
 
 [node name="ChunkContainer" type="Node2D" parent="VBoxContainer/MainContent/MiningView/SubViewportContainer/SubViewport"]
 
+[node name="CheckButton" type="CheckButton" parent="VBoxContainer/MainContent/MiningView"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = -32.0
+offset_right = 60.0
+offset_bottom = -4.0
+grow_vertical = 0
+
 [node name="UILayer" type="Control" parent="VBoxContainer/MainContent"]
 custom_minimum_size = Vector2(350, 0)
 layout_mode = 2
@@ -128,5 +142,22 @@ script = ExtResource("7_nxtc6")
 [node name="PlayerSystem" type="Node" parent="Systems"]
 script = ExtResource("7_jlsqs")
 
+[node name="StateMachine" type="Node" parent="Systems/PlayerSystem"]
+script = ExtResource("9_qmy6f")
+
+[node name="Idle" type="Node" parent="Systems/PlayerSystem/StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("10_mwfav")
+player = NodePath("../..")
+
+[node name="Mining" type="Node" parent="Systems/PlayerSystem/StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("11_3p2gp")
+player = NodePath("../..")
+
+[node name="Falling" type="Node" parent="Systems/PlayerSystem/StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("12_cvmbd")
+player = NodePath("../..")
+
 [node name="MiningSystem" type="Node" parent="Systems"]
 script = ExtResource("8_q8u5g")
+
+[connection signal="toggled" from="VBoxContainer/MainContent/MiningView/CheckButton" to="VBoxContainer/MainContent/MiningView" method="_on_auto_mining_toggled"]

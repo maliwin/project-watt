@@ -1,7 +1,28 @@
-[gd_scene load_steps=3 format=3 uid="uid://b1fnlnr2m7krs"]
+[gd_scene load_steps=6 format=3 uid="uid://b1fnlnr2m7krs"]
 
 [ext_resource type="Script" uid="uid://db3ckeqeg6h64" path="res://scripts/ui/mining_panel.gd" id="1_61bld"]
-[ext_resource type="PackedScene" uid="uid://cyapcu0jblhl4" path="res://scenes/ui/ResourceDisplay.tscn" id="1_ca1mj"]
+[ext_resource type="PackedScene" uid="uid://cyapcu0jblhl4" path="res://scenes/ui/ResourceDisplay.tscn" id="2_zpq35"]
+[ext_resource type="PackedScene" uid="uid://dpw5v2rl450b7" path="res://scenes/ui/PickaxePanel.tscn" id="3_c7mvu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qai7y"]
+content_margin_right = 5.0
+bg_color = Color(1, 1, 1, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k5m3v"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(0.188235, 0.14902, 0.12549, 0.85098)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.427451, 0.333333, 0.235294, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [node name="MiningHUD" type="Control"]
 layout_mode = 3
@@ -12,16 +33,105 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_61bld")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
 
-[node name="ResourceDisplayPanel" parent="VBoxContainer" instance=ExtResource("1_ca1mj")]
+[node name="MainVBox" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_qai7y")
+horizontal_scroll_mode = 3
+
+[node name="ContentMargin" type="MarginContainer" parent="MarginContainer/MainVBox/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_right = 10
+
+[node name="ScrollableContent" type="VBoxContainer" parent="MarginContainer/MainVBox/ScrollContainer/ContentMargin"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="PickaxePanel" parent="MarginContainer/MainVBox/ScrollContainer/ContentMargin/ScrollableContent" instance=ExtResource("3_c7mvu")]
 layout_mode = 2
 
-[node name="ReturnButton" type="Button" parent="VBoxContainer"]
+[node name="ObjectivesPanel" type="PanelContainer" parent="MarginContainer/MainVBox/ScrollContainer/ContentMargin/ScrollableContent"]
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_k5m3v")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/MainVBox/ScrollContainer/ContentMargin/ScrollableContent/ObjectivesPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/MainVBox/ScrollContainer/ContentMargin/ScrollableContent/ObjectivesPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/MainVBox/ScrollContainer/ContentMargin/ScrollableContent/ObjectivesPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Objectives"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/MainVBox/ScrollContainer/ContentMargin/ScrollableContent/ObjectivesPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Objective1" type="Label" parent="MarginContainer/MainVBox/ScrollContainer/ContentMargin/ScrollableContent/ObjectivesPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Objective 1"
+
+[node name="Objective2" type="Label" parent="MarginContainer/MainVBox/ScrollContainer/ContentMargin/ScrollableContent/ObjectivesPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Objective 2"
+
+[node name="Objective3" type="Label" parent="MarginContainer/MainVBox/ScrollContainer/ContentMargin/ScrollableContent/ObjectivesPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Objective 3"
+
+[node name="PouchPanel" type="PanelContainer" parent="MarginContainer/MainVBox/ScrollContainer/ContentMargin/ScrollableContent"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_k5m3v")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/MainVBox/ScrollContainer/ContentMargin/ScrollableContent/PouchPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/MainVBox/ScrollContainer/ContentMargin/ScrollableContent/PouchPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/MainVBox/ScrollContainer/ContentMargin/ScrollableContent/PouchPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Mining Pouch"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/MainVBox/ScrollContainer/ContentMargin/ScrollableContent/PouchPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ResourceDisplayPanel" parent="MarginContainer/MainVBox/ScrollContainer/ContentMargin/ScrollableContent/PouchPanel/MarginContainer/VBoxContainer" instance=ExtResource("2_zpq35")]
+layout_mode = 2
+
+[node name="ReturnButton" type="Button" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+size_flags_horizontal = 4
 text = "Return to Surface"
 
-[connection signal="pressed" from="VBoxContainer/ReturnButton" to="." method="_on_return_button_pressed"]
+[connection signal="pressed" from="MarginContainer/MainVBox/ReturnButton" to="." method="_on_return_button_pressed"]

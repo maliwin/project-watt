@@ -1,7 +1,3 @@
-# mining_view.gd
-# A complete rewrite to handle high-performance, chunk-based world rendering and character visuals.
-# This script is a "dumb view" - its only job is to display the state of the world
-# and report input. It does not contain any game logic itself.
 class_name MiningView
 extends Control
 
@@ -37,9 +33,10 @@ var _is_zoomed_out := false
 var _current_scanner_range := SCANNER_RANGE_ZOOMED_IN
 
 # --- Chunk Management ---
-var _chunk_nodes: Dictionary = {} # {Vector2i: TileMapLayer} - active visual chunks
+var _chunk_nodes: Dictionary = {} # active visual chunks, TODO: type
 var _recycled_chunk_nodes: Array[Node2D] = [] # Pool of inactive nodes to reuse
 
+signal auto_mining_toggled(toggled_on: bool)
 
 func _ready() -> void:
     Event.game_started.connect(_on_game_started)
@@ -49,6 +46,21 @@ func _ready() -> void:
     Event.character_fall_animation_started.connect(_on_character_fall_animation_started)
     Event.tile_mined_successfully.connect(_on_tile_mined_successfully)
     Event.zoom_level_changed.connect(_on_zoom_level_changed)
+    
+# TODO:aaaaaa
+func _on_auto_mining_toggled(toggled_on: bool) -> void:
+    print("emitting")
+    auto_mining_toggled.emit(toggled_on)
+
+
+func _gui_input(event: InputEvent) -> void:
+    if event is InputEventMouseButton and event.is_pressed():
+        if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+            Event.zoom_level_changed.emit(true)
+            get_viewport().set_input_as_handled()
+        elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+            Event.zoom_level_changed.emit(false)
+            get_viewport().set_input_as_handled()
 
 
 func _on_game_started(start_pos: Vector2i):

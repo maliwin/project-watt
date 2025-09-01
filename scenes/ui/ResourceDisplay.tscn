@@ -3,6 +3,17 @@
 [ext_resource type="Script" uid="uid://bn40qx21lom81" path="res://scripts/views/resource_display.gd" id="1_h8ifd"]
 
 [node name="ResourceDisplayPanel" type="RichTextLabel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = 15.0
+offset_right = -823.0
+offset_bottom = -355.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_horizontal = 3
+text = "AAAAAAAA
+"
 fit_content = true
 script = ExtResource("1_h8ifd")

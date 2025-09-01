@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=6 format=3 uid="uid://cpqhuepdi4xrb"]
+[gd_resource type="Theme" load_steps=9 format=3 uid="uid://cpqhuepdi4xrb"]
 
 [ext_resource type="FontFile" uid="uid://4kcvs3ovb884" path="res://assets/fonts/OpenSans-Regular.ttf" id="1_font"]
 
@@ -68,6 +68,38 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="StyleBoxFlat" id="TabBarPanelStyle"]
+bg_color = Color(0.188235, 0.14902, 0.12549, 0.85098)
+border_width_bottom = 2
+border_color = Color(0.427451, 0.333333, 0.235294, 1)
+
+[sub_resource type="StyleBoxFlat" id="TabSelectedStyle"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+bg_color = Color(0.427451, 0.333333, 0.235294, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_color = Color(0.427451, 0.333333, 0.235294, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+expand_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxFlat" id="TabUnselectedStyle"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+bg_color = Color(0.188235, 0.14902, 0.12549, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_color = Color(0.427451, 0.333333, 0.235294, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+
 [resource]
 default_font = ExtResource("1_font")
 default_font_size = 22
@@ -79,3 +111,9 @@ Button/styles/normal = SubResource("StyleBoxFlat_normal")
 Button/styles/pressed = SubResource("StyleBoxFlat_pressed")
 Panel/styles/panel = SubResource("StyleBoxFlat_panel")
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_panel")
+TabBar/colors/font_selected_color = Color(0.941176, 0.65098, 0.215686, 1)
+TabBar/colors/font_unselected_color = Color(0.964706, 0.917647, 0.85098, 0.7)
+TabBar/styles/panel = SubResource("TabBarPanelStyle")
+TabBar/styles/tab_selected = SubResource("TabSelectedStyle")
+TabBar/styles/tab_unselected = SubResource("TabUnselectedStyle")
+TabContainer/styles/panel = SubResource("StyleBoxFlat_panel")

@@ -1,0 +1,21 @@
+* incremental idle game with a focus on mining to the core of the planet
+* start with a basic tool, mine basic materials, return to surface, smelt materials, upgrade tool
+	* you first unlock/build a mud furnace, this allows you to smelt the first material to make a real pickaxe
+	* at the start you need to go back to the surface to smelt and upgrade
+* use upgraded tool to mine faster and deeper
+	* dirt -> stone -> hard stone -> etc
+	* pickaxes -> drills
+* attract NPCs to the surface settlement
+	* trader, researcher, etc
+	* to interact with the NPCs you need to go back to the surface
+		* however, over time you unlock ways to not have to go back to the surface (cargo chutes to take your material away and auto smelt it)
+* there needs to be a way to improve your pickaxe(s) while underground, some sort of randomization like terraria (using some form of currency, maybe a rare geode). Later this slowly expands into a real crafting system like PoE. 
+
+Early game, sketch:
+
+* lore drop about the Aeternus Group and your poverty
+* they offer you some crappy planets to buy, you can only buy one and it costs you everything
+* you land on the planet, you've got nothing, no automining feature, just your hands
+* you manually dig a few blocks and unlock objectives, you manually dig a bit more and you unlock automining
+* manually dig enough to create a furnace on the surface, smelt shitty iron, craft shoddy pick
+
