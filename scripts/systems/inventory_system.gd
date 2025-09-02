@@ -1,5 +1,5 @@
-class_name InventorySystem
 extends Node
+class_name InventorySystem
 
 signal pouch_changed(inventory: Dictionary)
 signal storage_changed(inventory: Dictionary)
@@ -12,6 +12,9 @@ signal storage_changed(inventory: Dictionary)
 
 var _pouch: Dictionary = {}
 var _storage: Dictionary = {}
+
+func _ready():
+    Systems.inventory = self
 
 # --- POUCH FUNCTIONS ---
 func add_to_pouch(resource_name: String, amount: int = 1):

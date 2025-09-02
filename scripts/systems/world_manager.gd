@@ -91,6 +91,8 @@ func get_completed_chunk(chunk_coord: Vector2i):
 # --- Generation ---
 
 func _ready():
+    Systems.world = self
+    
     thread = Thread.new()
     is_running = true
     thread.start(_thread_function)

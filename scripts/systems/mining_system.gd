@@ -5,6 +5,9 @@ extends Node
 var inventory_system: InventorySystem
 var world_manager: WorldManager
 
+func _ready():
+    Systems.mining = self
+
 func initialize(p_inventory: InventorySystem, p_world_manager: WorldManager):
     inventory_system = p_inventory
     world_manager = p_world_manager

@@ -16,10 +16,11 @@ config/features=PackedStringArray("4.4", "GL Compatibility")
 
 [autoload]
 
-GM="*res://scripts/singletons/game_manager.gd"
 Event="*res://scripts/singletons/signal_bus.gd"
 Ticker="*res://scripts/singletons/time_manager.gd"
 Constants="*res://scripts/singletons/constants.gd"
+GameState="*res://scripts/singletons/game_state.gd"
+Systems="*res://scripts/singletons/systems.gd"
 
 [display]
 

@@ -7,10 +7,28 @@ var current_mode: DisplayMode = DisplayMode.POUCH # Default to showing the pouch
 
 var _cached_inventory: Dictionary = {}
 
+#func _ready():
+    ## Connect to the new inventory signals.
+    #await get_tree().process_frame
+    #Systems.inventory.pouch_changed.connect(_on_pouch_changed)
+    #Systems.inventory.storage_changed.connect(_on_storage_changed)
+
+
+
 func _ready():
-    # Connect to the new inventory signals.
-    GM.inventory_system.pouch_changed.connect(_on_pouch_changed)
-    GM.inventory_system.storage_changed.connect(_on_storage_changed)
+    # call_deferred() will execute the function on the main thread during idle time,
+    # which happens after all nodes have finished their _ready() calls.
+    # This is a very safe and common way to handle initialization order.
+    call_deferred("_connect_to_systems")
+
+func _connect_to_systems():
+    # This code is now guaranteed to run after the Systems singleton is
+    # available and all systems have had a chance to register themselves.
+    if Systems and Systems.inventory:
+        Systems.inventory.pouch_changed.connect(_on_pouch_changed)
+        Systems.inventory.storage_changed.connect(_on_storage_changed)
+    else:
+        push_error("Could not connect to InventorySystem. Is it registered correctly in the Systems singleton?")
 
 
 func _on_pouch_changed(new_pouch: Dictionary):

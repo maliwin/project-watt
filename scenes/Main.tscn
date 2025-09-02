@@ -1,8 +1,9 @@
-[gd_scene load_steps=14 format=3 uid="uid://7fq0w3id0uk4"]
+[gd_scene load_steps=16 format=3 uid="uid://7fq0w3id0uk4"]
 
 [ext_resource type="Script" uid="uid://lhg6ab6p2rwq" path="res://scripts/main.gd" id="1_q8u5g"]
 [ext_resource type="Script" uid="uid://yfw24j847bah" path="res://scripts/views/mining_view.gd" id="1_rvslj"]
-[ext_resource type="Script" uid="uid://cecgx64wcwgqn" path="res://scripts/ui/ui_manager.gd" id="5_nxtc6"]
+[ext_resource type="PackedScene" uid="uid://deauwx30e560d" path="res://scenes/ui/SurfaceView.tscn" id="3_mwfav"]
+[ext_resource type="Script" uid="uid://dvxvi8bp1nmdc" path="res://scripts/ui/ui_manager.gd" id="5_nxtc6"]
 [ext_resource type="Script" uid="uid://bkicl0mjgegmp" path="res://scripts/tools/player_input.gd" id="6_c01mt"]
 [ext_resource type="PackedScene" uid="uid://b1fnlnr2m7krs" path="res://scenes/ui/MiningPanel.tscn" id="6_jlsqs"]
 [ext_resource type="Script" uid="uid://ba5xeo4a1dp6e" path="res://scripts/systems/player/player_system.gd" id="7_jlsqs"]
@@ -13,6 +14,7 @@
 [ext_resource type="Script" uid="uid://bpolb02t2j7hs" path="res://scripts/systems/player/idle_state.gd" id="10_mwfav"]
 [ext_resource type="Script" uid="uid://bxucl7wvq4ief" path="res://scripts/systems/player/mining_state.gd" id="11_3p2gp"]
 [ext_resource type="Script" uid="uid://cqyhv5wlusdem" path="res://scripts/systems/player/falling_state.gd" id="12_cvmbd"]
+[ext_resource type="Script" uid="uid://b0wah2vd04ajc" path="res://scripts/systems/view_manager.gd" id="14_mwfav"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -25,115 +27,6 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_q8u5g")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="TopBar" type="PanelContainer" parent="VBoxContainer"]
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/TopBar"]
-layout_mode = 2
-alignment = 2
-
-[node name="Button" type="Button" parent="VBoxContainer/TopBar/HBoxContainer"]
-layout_mode = 2
-text = "Menu"
-
-[node name="MainContent" type="HBoxContainer" parent="VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-alignment = 2
-
-[node name="MiningView" type="Control" parent="VBoxContainer/MainContent"]
-custom_minimum_size = Vector2(400, 0)
-layout_mode = 2
-script = ExtResource("1_rvslj")
-
-[node name="SubViewportContainer" type="SubViewportContainer" parent="VBoxContainer/MainContent/MiningView"]
-layout_mode = 2
-offset_right = 400.0
-offset_bottom = 550.0
-size_flags_horizontal = 3
-mouse_filter = 2
-stretch = true
-
-[node name="SubViewport" type="SubViewport" parent="VBoxContainer/MainContent/MiningView/SubViewportContainer"]
-handle_input_locally = false
-canvas_item_default_texture_filter = 0
-size = Vector2i(400, 550)
-render_target_update_mode = 4
-
-[node name="Character" type="Sprite2D" parent="VBoxContainer/MainContent/MiningView/SubViewportContainer/SubViewport"]
-z_index = 99
-
-[node name="Camera2D" type="Camera2D" parent="VBoxContainer/MainContent/MiningView/SubViewportContainer/SubViewport"]
-
-[node name="RangeIndicatorLayer" type="TileMapLayer" parent="VBoxContainer/MainContent/MiningView/SubViewportContainer/SubViewport"]
-z_index = 50
-
-[node name="ChunkContainer" type="Node2D" parent="VBoxContainer/MainContent/MiningView/SubViewportContainer/SubViewport"]
-
-[node name="CheckButton" type="CheckButton" parent="VBoxContainer/MainContent/MiningView"]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = -32.0
-offset_right = 60.0
-offset_bottom = -4.0
-grow_vertical = 0
-
-[node name="UILayer" type="Control" parent="VBoxContainer/MainContent"]
-custom_minimum_size = Vector2(350, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="UIManager" type="Control" parent="VBoxContainer/MainContent/UILayer"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 4
-size_flags_vertical = 3
-script = ExtResource("5_nxtc6")
-
-[node name="MiningPanel" parent="VBoxContainer/MainContent/UILayer/UIManager" instance=ExtResource("6_jlsqs")]
-layout_mode = 1
-
-[node name="SurfacePanel" parent="VBoxContainer/MainContent/UILayer/UIManager" instance=ExtResource("7_q8u5g")]
-visible = false
-layout_mode = 1
-
-[node name="BottomBar" type="PanelContainer" parent="VBoxContainer"]
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/BottomBar"]
-layout_mode = 2
-alignment = 1
-
-[node name="Button" type="Button" parent="VBoxContainer/BottomBar/HBoxContainer"]
-layout_mode = 2
-text = "Inventory"
-
-[node name="Button2" type="Button" parent="VBoxContainer/BottomBar/HBoxContainer"]
-layout_mode = 2
-text = "Quests"
-
-[node name="Button3" type="Button" parent="VBoxContainer/BottomBar/HBoxContainer"]
-layout_mode = 2
-text = "Shop"
-
-[node name="PlayerInput" type="Node" parent="."]
-script = ExtResource("6_c01mt")
-
 [node name="Systems" type="Node" parent="."]
 
 [node name="WorldManager" type="Node" parent="Systems"]
@@ -145,19 +38,167 @@ script = ExtResource("7_jlsqs")
 [node name="StateMachine" type="Node" parent="Systems/PlayerSystem"]
 script = ExtResource("9_qmy6f")
 
-[node name="Idle" type="Node" parent="Systems/PlayerSystem/StateMachine" node_paths=PackedStringArray("player")]
+[node name="IDLE" type="Node" parent="Systems/PlayerSystem/StateMachine" node_paths=PackedStringArray("player")]
 script = ExtResource("10_mwfav")
 player = NodePath("../..")
 
-[node name="Mining" type="Node" parent="Systems/PlayerSystem/StateMachine" node_paths=PackedStringArray("player")]
+[node name="MINING" type="Node" parent="Systems/PlayerSystem/StateMachine" node_paths=PackedStringArray("player")]
 script = ExtResource("11_3p2gp")
 player = NodePath("../..")
 
-[node name="Falling" type="Node" parent="Systems/PlayerSystem/StateMachine" node_paths=PackedStringArray("player")]
+[node name="FALLING" type="Node" parent="Systems/PlayerSystem/StateMachine" node_paths=PackedStringArray("player")]
 script = ExtResource("12_cvmbd")
 player = NodePath("../..")
 
 [node name="MiningSystem" type="Node" parent="Systems"]
 script = ExtResource("8_q8u5g")
 
-[connection signal="toggled" from="VBoxContainer/MainContent/MiningView/CheckButton" to="VBoxContainer/MainContent/MiningView" method="_on_auto_mining_toggled"]
+[node name="ViewManager" type="Node" parent="Systems"]
+script = ExtResource("14_mwfav")
+
+[node name="GameState" type="Node" parent="."]
+script = ExtResource("9_qmy6f")
+
+[node name="StateMachine" type="Node" parent="GameState"]
+
+[node name="MINING" type="Node" parent="GameState/StateMachine"]
+
+[node name="SURFACE" type="Node" parent="GameState/StateMachine"]
+
+[node name="PlayerInput" type="Node" parent="."]
+script = ExtResource("6_c01mt")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="UIManager" type="Control" parent="UI" node_paths=PackedStringArray("mining_view", "surface_view", "mining_panel", "surface_panel")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 49.0
+offset_bottom = 49.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+script = ExtResource("5_nxtc6")
+mining_view = NodePath("../MainLayout/ContentLayout/Views/MiningView")
+surface_view = NodePath("../MainLayout/ContentLayout/Views/SurfaceView")
+mining_panel = NodePath("../MainLayout/ContentLayout/Panels/MiningPanel")
+surface_panel = NodePath("../MainLayout/ContentLayout/Panels/SurfacePanel")
+
+[node name="MainLayout" type="VBoxContainer" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopBar" type="PanelContainer" parent="UI/MainLayout"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/MainLayout/TopBar"]
+layout_mode = 2
+alignment = 2
+
+[node name="Button" type="Button" parent="UI/MainLayout/TopBar/HBoxContainer"]
+layout_mode = 2
+text = "Menu"
+
+[node name="ContentLayout" type="HBoxContainer" parent="UI/MainLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Views" type="Control" parent="UI/MainLayout/ContentLayout"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MiningView" type="Control" parent="UI/MainLayout/ContentLayout/Views"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_rvslj")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="UI/MainLayout/ContentLayout/Views/MiningView"]
+layout_mode = 2
+offset_right = 400.0
+offset_bottom = 550.0
+size_flags_horizontal = 3
+mouse_filter = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="UI/MainLayout/ContentLayout/Views/MiningView/SubViewportContainer"]
+handle_input_locally = false
+canvas_item_default_texture_filter = 0
+size = Vector2i(400, 550)
+render_target_update_mode = 4
+
+[node name="Character" type="Sprite2D" parent="UI/MainLayout/ContentLayout/Views/MiningView/SubViewportContainer/SubViewport"]
+z_index = 99
+
+[node name="Camera2D" type="Camera2D" parent="UI/MainLayout/ContentLayout/Views/MiningView/SubViewportContainer/SubViewport"]
+
+[node name="RangeIndicatorLayer" type="TileMapLayer" parent="UI/MainLayout/ContentLayout/Views/MiningView/SubViewportContainer/SubViewport"]
+z_index = 50
+
+[node name="ChunkContainer" type="Node2D" parent="UI/MainLayout/ContentLayout/Views/MiningView/SubViewportContainer/SubViewport"]
+
+[node name="CheckButton" type="CheckButton" parent="UI/MainLayout/ContentLayout/Views/MiningView"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = -32.0
+offset_right = 60.0
+offset_bottom = -4.0
+grow_vertical = 0
+
+[node name="SurfaceView" parent="UI/MainLayout/ContentLayout/Views" instance=ExtResource("3_mwfav")]
+visible = false
+layout_mode = 1
+
+[node name="Panels" type="Control" parent="UI/MainLayout/ContentLayout"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.75
+
+[node name="MiningPanel" parent="UI/MainLayout/ContentLayout/Panels" instance=ExtResource("6_jlsqs")]
+layout_mode = 2
+anchors_preset = 0
+offset_left = -4.0
+offset_top = 49.0
+offset_right = -4.0
+offset_bottom = 49.0
+
+[node name="SurfacePanel" parent="UI/MainLayout/ContentLayout/Panels" instance=ExtResource("7_q8u5g")]
+layout_mode = 1
+offset_left = -4.0
+offset_top = 49.0
+offset_right = -4.0
+offset_bottom = 49.0
+
+[node name="BottomBar" type="PanelContainer" parent="UI/MainLayout"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/MainLayout/BottomBar"]
+layout_mode = 2
+alignment = 1
+
+[node name="Button" type="Button" parent="UI/MainLayout/BottomBar/HBoxContainer"]
+layout_mode = 2
+text = "Inventory"
+
+[node name="Button2" type="Button" parent="UI/MainLayout/BottomBar/HBoxContainer"]
+layout_mode = 2
+text = "Quests"
+
+[node name="Button3" type="Button" parent="UI/MainLayout/BottomBar/HBoxContainer"]
+layout_mode = 2
+text = "Shop"
+
+[connection signal="toggled" from="UI/MainLayout/ContentLayout/Views/MiningView/CheckButton" to="UI/MainLayout/ContentLayout/Views/MiningView" method="_on_auto_mining_toggled"]

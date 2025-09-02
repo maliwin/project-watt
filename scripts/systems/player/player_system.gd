@@ -16,6 +16,8 @@ func _ready():
     Event.tile_mined_successfully.connect(_on_tile_mined)
     
     state_machine.change_state("IDLE")
+    
+    Systems.player = self
 
 
 func _on_game_tick(delta: float):
@@ -28,6 +30,9 @@ func set_auto_mine(auto_mine_on: bool):
     print("Auto-mine toggled to: ", auto_mine_on)
     _auto_mine = auto_mine_on
 
+func return_to_surface():
+    _auto_mine = false
+    state_machine.change_state("IDLE")
 
 # --- Helper Functions (called by States) ---
 
@@ -43,7 +48,7 @@ func cancel_pending_mine():
         
 func calculate_fall_distance() -> int:
     var fall_distance = 0
-    while GM.world_manager.is_tile_mined(_character_world_pos + Vector2i(0, fall_distance + 1)):
+    while Systems.world.is_tile_mined(_character_world_pos + Vector2i(0, fall_distance + 1)):
         if _character_world_pos.y + fall_distance + 1 >= 5000: break
         fall_distance += 1
     return fall_distance
@@ -70,14 +75,11 @@ func on_fall_complete():
 func get_character_world_pos() -> Vector2i:
     return _character_world_pos
 
-
 # --- Private Logic ---
 
 func _on_tile_mined(_tile_pos: Vector2i, _resources: Array[String]):
     if calculate_fall_distance() > 0:
         state_machine.change_state("FALLING")
-    # If we're mining and don't fall, the Mining state will continue the loop.
-    # If we're not in the mining state (e.g. manual digging), this will do nothing.
     elif state_machine._current_state.name.to_upper() == "MINING" and _auto_mine:
         start_mining_next_block()
     else:
@@ -86,6 +88,5 @@ func _on_tile_mined(_tile_pos: Vector2i, _resources: Array[String]):
 func _mine_block_below():
     _mining_event_id = -1
     if state_machine._current_state.name.to_upper() != "MINING": return
-    
     var target_pos = _character_world_pos + Vector2i(0, 1)
-    GM.mining_system.attempt_mine_tile(target_pos, _current_tool)
+    Systems.mining.attempt_mine_tile(target_pos, _current_tool)

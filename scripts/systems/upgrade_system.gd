@@ -4,6 +4,9 @@ extends Node
 var inventory_system: InventorySystem
 var mining_tool: MiningTool
 
+func _ready():
+    Systems.upgrade = self
+
 func can_upgrade_pickaxe() -> bool:
     var cost = mining_tool.get_upgrade_cost()
     if cost.is_empty():

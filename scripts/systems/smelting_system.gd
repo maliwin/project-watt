@@ -6,11 +6,14 @@ const SMELT_RECIPES := {
     "Iron": { "cost": { "Iron": 10 }, "output": "Iron Bar", "time": 8.0 }
 }
 
+func _ready():
+    Systems.smelting = self
+
 func can_smelt(ore_type: String) -> bool:
     if not SMELT_RECIPES.has(ore_type):
         return false
     var cost = SMELT_RECIPES[ore_type]["cost"]
-    return GM.inventory_system.has_in_storage(cost)
+    return Systems.inventory.has_in_storage(cost)
 
 func start_smelting(ore_type: String):
     if not can_smelt(ore_type):
@@ -18,13 +21,13 @@ func start_smelting(ore_type: String):
 
     var recipe = SMELT_RECIPES[ore_type]
     for item in recipe["cost"]:
-        GM.inventory_system.remove_from_storage(item, recipe["cost"][item])
+        Systems.inventory.remove_from_storage(item, recipe["cost"][item])
 
     var timer = Timer.new()
     timer.wait_time = recipe["time"]
     timer.one_shot = true
     timer.timeout.connect(func():
-        GM.inventory_system.add_to_storage(recipe["output"], 1)
+        Systems.inventory.add_to_storage(recipe["output"], 1)
         Event.smelt_complete.emit(recipe["output"], 1)
         timer.queue_free()
     )
