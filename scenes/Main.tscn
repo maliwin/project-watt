@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://7fq0w3id0uk4"]
+[gd_scene load_steps=19 format=3 uid="uid://7fq0w3id0uk4"]
 
 [ext_resource type="Script" uid="uid://lhg6ab6p2rwq" path="res://scripts/main.gd" id="1_q8u5g"]
 [ext_resource type="Script" uid="uid://yfw24j847bah" path="res://scripts/views/mining_view.gd" id="1_rvslj"]
@@ -11,12 +11,15 @@
 [ext_resource type="PackedScene" uid="uid://baye2h43jfsal" path="res://scenes/ui/SurfacePanel.tscn" id="7_q8u5g"]
 [ext_resource type="Script" uid="uid://cjkmjw21atmhg" path="res://scripts/systems/mining_system.gd" id="8_q8u5g"]
 [ext_resource type="Script" uid="uid://d4ca1uudc3xtc" path="res://scripts/fsm/state_machine.gd" id="9_qmy6f"]
+[ext_resource type="Script" uid="uid://w7qdkjcwpcl" path="res://scripts/singletons/game_state.gd" id="10_bb450"]
+[ext_resource type="Script" uid="uid://cqcupip3jkxqp" path="res://scripts/game_states/mining.gd" id="10_ft6cd"]
 [ext_resource type="Script" uid="uid://bpolb02t2j7hs" path="res://scripts/systems/player/idle_state.gd" id="10_mwfav"]
 [ext_resource type="Script" uid="uid://bxucl7wvq4ief" path="res://scripts/systems/player/mining_state.gd" id="11_3p2gp"]
+[ext_resource type="Script" uid="uid://c8enx5gvf6gkb" path="res://scripts/game_states/surface.gd" id="11_bb450"]
 [ext_resource type="Script" uid="uid://cqyhv5wlusdem" path="res://scripts/systems/player/falling_state.gd" id="12_cvmbd"]
 [ext_resource type="Script" uid="uid://b0wah2vd04ajc" path="res://scripts/systems/view_manager.gd" id="14_mwfav"]
 
-[node name="Main" type="Control"]
+[node name="Main" type="Control" node_paths=PackedStringArray("ui_manager", "view_manager", "game_state_fsm")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,6 +29,9 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_q8u5g")
+ui_manager = NodePath("UI/UIManager")
+view_manager = NodePath("Systems/ViewManager")
+game_state_fsm = NodePath("GameState/StateMachine")
 
 [node name="Systems" type="Node" parent="."]
 
@@ -53,17 +59,22 @@ player = NodePath("../..")
 [node name="MiningSystem" type="Node" parent="Systems"]
 script = ExtResource("8_q8u5g")
 
-[node name="ViewManager" type="Node" parent="Systems"]
+[node name="ViewManager" type="Node" parent="Systems" node_paths=PackedStringArray("mining_view", "surface_view")]
 script = ExtResource("14_mwfav")
+mining_view = NodePath("../../UI/MainLayout/ContentLayout/Views/MiningView")
+surface_view = NodePath("../../UI/MainLayout/ContentLayout/Views/SurfaceView")
 
 [node name="GameState" type="Node" parent="."]
-script = ExtResource("9_qmy6f")
+script = ExtResource("10_bb450")
 
 [node name="StateMachine" type="Node" parent="GameState"]
+script = ExtResource("9_qmy6f")
 
 [node name="MINING" type="Node" parent="GameState/StateMachine"]
+script = ExtResource("10_ft6cd")
 
 [node name="SURFACE" type="Node" parent="GameState/StateMachine"]
+script = ExtResource("11_bb450")
 
 [node name="PlayerInput" type="Node" parent="."]
 script = ExtResource("6_c01mt")

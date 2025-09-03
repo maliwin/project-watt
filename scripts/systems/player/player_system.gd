@@ -15,7 +15,8 @@ func _ready():
     Event.game_tick.connect(_on_game_tick)
     Event.tile_mined_successfully.connect(_on_tile_mined)
     
-    state_machine.change_state("IDLE")
+    state_machine.change_state("MINING")
+    print("mine!!")
     
     Systems.player = self
 

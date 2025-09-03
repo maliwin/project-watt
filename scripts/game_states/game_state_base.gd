@@ -1,7 +1,13 @@
 class_name GameStateBase
 extends State
 
-# We will pass these references in from the GameState singleton.
-var mining_view: Control
-var surface_view: Control
+var actor: Node
+var state_machine: StateMachine
+var game_state: GameState
 var ui_manager: UIManager
+
+func initialize(p_actor: Node, p_ui_manager: UIManager):
+    actor = p_actor
+    state_machine = get_parent() as StateMachine
+    game_state = p_actor as GameState
+    ui_manager = p_ui_manager

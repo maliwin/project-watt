@@ -8,13 +8,14 @@ signal start_new_mine_pressed
 @onready var new_mine_button: Button = %NewMineButton
 
 func _ready():
-    await get_tree().process_frame
     continue_button.pressed.connect(func(): continue_mine_pressed.emit())
     new_mine_button.pressed.connect(func(): start_new_mine_pressed.emit())
-    
     visibility_changed.connect(_on_visibility_changed)
-    
     _build_smelting_buttons()
+    
+    tree_entered.connect(_connect_to_systems, CONNECT_ONE_SHOT)
+    
+func _connect_to_systems():
     Systems.inventory.storage_changed.connect(_update_smelting_buttons)
 
 

@@ -1,4 +1,5 @@
 extends Control
+class_name UIManager
 
 # This script is now just a container for references. The Game States will use it.
 @export var mining_view: Control
